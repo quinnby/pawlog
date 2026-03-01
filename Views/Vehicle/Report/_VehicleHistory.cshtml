@@ -14,7 +14,7 @@
             <img src="@config.GetLogoUrl()" class="lubelogger-logo" />
             <div class="ms-5">
                 <span class="display-6">
-                    @translator.Translate(userLanguage, "Vehicle Maintenance Report")
+                    @translator.Translate(userLanguage, "Pet Care History")
                 </span>
                 @if (!string.IsNullOrWhiteSpace(Model.StartDate) && !string.IsNullOrWhiteSpace(Model.EndDate))
                 {
@@ -31,7 +31,7 @@
         <div class="col-6">
             <ul class="list-group">
                 <li class="list-group-item">
-                    <span class="display-6">@($"{Model.VehicleData.Year} {Model.VehicleData.Make} {Model.VehicleData.Model}")</span>
+                    <span class="display-6">@(!string.IsNullOrWhiteSpace(Model.VehicleData.PetName) ? Model.VehicleData.PetName : $"{Model.VehicleData.Year} {Model.VehicleData.Make} {Model.VehicleData.Model}")</span>
                 </li>
                 @if (!string.IsNullOrWhiteSpace(Model.VehicleData.LicensePlate))
                 {
@@ -50,6 +50,9 @@
                 }
                 <li class="list-group-item">
                     <div class="row">
+                        @* Post-Phase-8 cleanup: Fuel type indicator is vehicle-only. Hide for pets. *@
+                        @if (string.IsNullOrWhiteSpace(Model.VehicleData.PetName))
+                        {
                         <div class="col-4">
                             @if (Model.VehicleData.IsElectric)
                             {
@@ -64,13 +67,15 @@
                                 <span><i class="bi bi-fuel-pump me-2"></i>@translator.Translate(userLanguage, "Gasoline")</span>
                             }
                         </div>
+                        }
                         @if (!string.IsNullOrWhiteSpace(Model.DaysOwned))
                         {
                             <div class="col-4">
                                 <span><i class="bi bi-calendar-range me-2"></i>@($"{Model.DaysOwned} {translator.Translate(userLanguage, "Days")}")</span>
                             </div>
                         }
-                        @if (Model.DistanceTraveled != default)
+                        @* Post-Phase-8 cleanup: Distance traveled is vehicle-only; suppress when zero or empty. *@
+                        @if (!string.IsNullOrWhiteSpace(Model.DistanceTraveled) && Model.DistanceTraveled != "0")
                         {
                             <div class="col-4">
                                 <span><i class="bi bi-speedometer me-2"></i>@($"{Model.DistanceTraveled} {Model.DistanceUnit}")</span>
@@ -82,10 +87,25 @@
         </div>
         <div class="col-6">
             <ul class="list-group">
-                <li class="list-group-item">@($"{translator.Translate(userLanguage, "Last Reported Odometer Reading")}: {Model.Odometer}") </li>
-                <li class="list-group-item">@($"{translator.Translate(userLanguage, "Average Fuel Economy")}: {Model.MPG}") </li>
-                <li class="list-group-item">@($"{translator.Translate(userLanguage, "Total Spent(excl. fuel)")}: {Model.TotalCost.ToString("C")} ({Model.TotalCostPerMile.ToString("C")}/{Model.DistanceUnit})") </li>
-                <li class="list-group-item">@($"{translator.Translate(userLanguage, "Total Spent on Fuel")}: {Model.TotalGasCost.ToString("C")} ({Model.TotalGasCostPerMile.ToString("C")}/{Model.DistanceUnit})") </li>
+                @* Post-Phase-8 cleanup: Odometer, MPG, and fuel cost are vehicle-only.
+                   Suppress each when zero/empty (always true for pet profiles). *@
+                @if (!string.IsNullOrWhiteSpace(Model.Odometer) && Model.Odometer != "0")
+                {
+                    <li class="list-group-item">@($"{translator.Translate(userLanguage, "Last Reported Odometer Reading")}: {Model.Odometer}") </li>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.MPG) && !Model.MPG.StartsWith("0"))
+                {
+                    <li class="list-group-item">@($"{translator.Translate(userLanguage, "Average Fuel Economy")}: {Model.MPG}") </li>
+                }
+                @if (Model.TotalCost > 0)
+                {
+                    @* Show plain total cost; cost-per-distance omitted as it is vehicle-only *@
+                    <li class="list-group-item">@($"{translator.Translate(userLanguage, "Total Care Cost")}: {Model.TotalCost.ToString("C")}") </li>
+                }
+                @if (Model.TotalGasCost > 0)
+                {
+                    <li class="list-group-item">@($"{translator.Translate(userLanguage, "Total Spent on Fuel")}: {Model.TotalGasCost.ToString("C")} ({Model.TotalGasCostPerMile.ToString("C")}/{Model.DistanceUnit})") </li>
+                }
             </ul>
         </div>
     </div>
@@ -192,11 +212,14 @@
                 <div class="col-6">
                     <ul class="list-group">
                         <li class="list-group-item">
-                            <span class="display-6">@($"{Model.VehicleData.Year} {Model.VehicleData.Make} {Model.VehicleData.Model}")</span>
+                            <span class="display-6">@(!string.IsNullOrWhiteSpace(Model.VehicleData.PetName) ? Model.VehicleData.PetName : $"{Model.VehicleData.Year} {Model.VehicleData.Make} {Model.VehicleData.Model}")</span>
                         </li>
+                        @if (string.IsNullOrWhiteSpace(Model.VehicleData.PetName))
+                        {
                         <li class="list-group-item">
                             <span class="lead">@($"{StaticHelper.GetVehicleIdentifier(Model.VehicleData)}")</span>
                         </li>
+                        }
                         @foreach (ExtraField extraField in Model.VehicleData.ExtraFields)
                         {
                             if (!string.IsNullOrWhiteSpace(extraField.Value))

@@ -123,6 +123,14 @@ namespace CarCareTracker.Controllers
                     petReminderType: PetReminderType.FollowUpReminder,
                     linkedRecordType: ReminderLinkedRecordType.HealthRecord,
                     linkedRecordId: convertedRecord.Id);
+
+                // Weight Check sync: keep CurrentWeight in step with the most recent
+                // Weight Check record so the pet profile always shows a useful value.
+                // Manual edits to CurrentWeight remain valid until the next Weight Check is saved.
+                if (healthRecord.Category == HealthRecordCategory.WeightCheck && healthRecord.WeightValue > 0)
+                {
+                    TrySyncCurrentWeightFromLatestWeightCheck(convertedRecord.VehicleId);
+                }
             }
             return Json(OperationResponse.Conditional(result, string.Empty, StaticHelper.GenericErrorMessage));
         }
@@ -304,6 +312,43 @@ namespace CarCareTracker.Controllers
                         "Phase 4.2 ClearLinkedHealthRecordId: unknown specialized type '{Type}' (id={Id}). Stale link left to self-heal on next save.",
                         specializedType, specializedId);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Reads all Weight Check records for the given pet, finds the most recent one with a
+        /// valid WeightValue, and writes a formatted string ("{value} {unit}") to the pet
+        /// profile's CurrentWeight field.  Silently no-ops if the pet cannot be found or if
+        /// no qualifying Weight Check records exist, so it can never break the outer save.
+        /// </summary>
+        private void TrySyncCurrentWeightFromLatestWeightCheck(int petId)
+        {
+            try
+            {
+                var latestWeightCheck = _healthRecordDataAccess
+                    .GetHealthRecordsByVehicleId(petId)
+                    .Where(x => x.Category == HealthRecordCategory.WeightCheck && x.WeightValue > 0)
+                    .OrderByDescending(x => x.Date)
+                    .FirstOrDefault();
+
+                if (latestWeightCheck == null)
+                    return;
+
+                var pet = _dataAccess.GetVehicleById(petId);
+                if (pet == null || pet.Id == 0)
+                    return;
+
+                var unit = string.IsNullOrWhiteSpace(latestWeightCheck.WeightUnit)
+                    ? "lbs"
+                    : latestWeightCheck.WeightUnit.Trim();
+
+                pet.CurrentWeight = $"{latestWeightCheck.WeightValue} {unit}";
+                _dataAccess.SaveVehicle(pet);
+            }
+            catch (Exception ex)
+            {
+                // Non-fatal: log and continue so the original HealthRecord save result is unaffected.
+                _logger.LogWarning(ex, "TrySyncCurrentWeightFromLatestWeightCheck failed for petId={PetId}", petId);
             }
         }
     }

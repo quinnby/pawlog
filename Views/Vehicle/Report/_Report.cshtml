@@ -103,7 +103,7 @@
                     <button onclick="showGlobalSearch()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Search")<i class="bi ms-2 bi-search"></i></button>
                 </div>
                 <div class="d-grid">
-                    <button onclick="generateVehicleHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Vehicle Maintenance Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
+                    <button onclick="generateVehicleHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Care History Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                 </div>
                 <div class="d-grid">
                     <button onclick="showPetSummaryModal()" class="btn btn-outline-success btn-md mt-1 mb-1"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</button>
@@ -141,11 +141,16 @@
                 </div>
             </div>
         </div>
+@* Post-Phase-8 cleanup: Only render the Fuel Mileage by Month chart when there is
+   actual fuel mileage data. Pets have no fuel records so this block stays hidden. *@
+@if (Model.FuelMileageForVehicleByMonth != null && Model.FuelMileageForVehicleByMonth.CostData.Any(x => x.Cost > 0))
+{
         <div class="col-md-6 col-12 chartContainer border rounded">
             <div class="d-flex justify-content-center align-items-center" style="height:100%;" id="monthFuelMileageReportContent">
                     @await Html.PartialAsync("Report/_MPGByMonthReport", Model.FuelMileageForVehicleByMonth)
             </div>
         </div>
+}
             <div class="col-md-2 flex-grow-1 col-12 chartContainer border rounded" id="collaboratorContent">
                 @await Html.PartialAsync("Report/_Collaborators", Model.Collaborators)
             </div>
@@ -158,7 +163,7 @@
         <div>
             <button class="btn btn-outline-secondary btn-md mt-1 mb-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>
             <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="generateVehicleHistoryReport()">@translator.Translate(userLanguage, "Vehicle Maintenance Report")</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="generateVehicleHistoryReport()">@translator.Translate(userLanguage, "Care History Report")</a></li>
                     <li><a class="dropdown-item" href="#" onclick="showPetSummaryModal()"><i class="bi bi-file-earmark-medical me-1"></i>Pet Health Summary</a></li>
                     <li><a class="dropdown-item" href="#" onclick="exportAttachments()">@translator.Translate(userLanguage, "Export Attachments")</a></li>
                     @if (Model.HasVehicleImageMap || Model.CustomWidgetsConfigured)

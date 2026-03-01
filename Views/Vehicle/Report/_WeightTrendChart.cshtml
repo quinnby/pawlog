@@ -55,7 +55,15 @@
             // Build chart
             var labels = data.map(function (e) { return e.date; });
             var values = data.map(function (e) { return e.value; });
-            var unit = data.length > 0 ? data[0].unit : '';
+            // Detect mixed units: if entries use more than one unit, label chart generically
+            // and show per-point unit in tooltips. Legacy records without a stored unit
+            // have already been normalised to "lbs" by the server-side fallback.
+            var allUnits = data.map(function (e) { return e.unit; });
+            var distinctUnits = allUnits.filter(function (u, i, a) { return a.indexOf(u) === i; });
+            var isMixedUnits = distinctUnits.length > 1;
+            var commonUnit   = isMixedUnits ? '' : (distinctUnits[0] || '');
+            var datasetLabel = isMixedUnits ? 'Weight' : ('Weight (' + commonUnit + ')');
+            var yAxisLabel   = isMixedUnits ? 'Weight (mixed units — see tooltip)' : ('Weight (' + commonUnit + ')');
             var useDarkMode = getGlobalConfig().useDarkMode;
             var lineColor = useDarkMode ? '#4fc3f7' : '#1976d2';
             $('#weightChartContainer').show();
@@ -64,7 +72,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Weight (' + unit + ')',
+                        label: datasetLabel,
                         data: values,
                         borderColor: lineColor,
                         backgroundColor: lineColor + '33',
@@ -79,11 +87,20 @@
                     scales: {
                         y: {
                             beginAtZero: false,
-                            title: { display: true, text: 'Weight (' + unit + ')' }
+                            title: { display: true, text: yAxisLabel }
                         }
                     },
                     plugins: {
-                        legend: { display: true }
+                        legend: { display: true },
+                        tooltip: {
+                            callbacks: {
+                                // Always show per-point unit in tooltip for clarity
+                                label: function (context) {
+                                    var entry = data[context.dataIndex];
+                                    return (entry.title ? entry.title + ': ' : '') + entry.value + ' ' + entry.unit;
+                                }
+                            }
+                        }
                     }
                 }
             });

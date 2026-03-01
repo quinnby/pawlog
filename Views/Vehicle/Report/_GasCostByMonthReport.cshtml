@@ -28,28 +28,34 @@
             var index = sortedByMPG.FindIndex(x => x.MonthName == gasCost.MonthName);
             @:barGraphColors.push('@barGraphColors[index]');
         }
+                // Post-Phase-8 cleanup: only include the distance overlay when there is
+                // actual odometer/distance data; pets have none so suppress it.
+                var hasDistanceData = lineChartData.some(v => v > 0);
+                var chartDatasets = [
+                    {
+                        label: decodeHTMLEntities('@translator.Translate(userLanguage, "Expenses by Month")'),
+                        backgroundColor: barGraphColors,
+                        data: barGraphData,
+                        order: 1,
+                        yAxisID: 'y',
+                    }
+                ];
+                if (hasDistanceData) {
+                    chartDatasets.push({
+                        label: decodeHTMLEntities('@translator.Translate(userLanguage, "Distance Traveled by Month")'),
+                        data: lineChartData,
+                        borderColor: useDarkMode ? "#fff" : "#000",
+                        backgroundColor: useDarkMode ? "#000" : "#fff",
+                        type: 'line',
+                        order: 0,
+                        yAxisID: 'y1',
+                    });
+                }
                 new Chart($("#bar-chart"), {
                     type: 'bar',
                     data: {
                         labels: barGraphLabels,
-                        datasets: [
-                            {
-                                label: decodeHTMLEntities('@translator.Translate(userLanguage, "Expenses by Month")'),
-                                backgroundColor: barGraphColors,
-                                data: barGraphData,
-                                order: 1,
-                                yAxisID: 'y',
-                            },
-                            {
-                                label: decodeHTMLEntities('@translator.Translate(userLanguage, "Distance Traveled by Month")'),
-                                data: lineChartData,
-                                borderColor: useDarkMode ? "#fff" : "#000",
-                                backgroundColor: useDarkMode ? "#000" : "#fff",
-                                type: 'line',
-                                order: 0,
-                                yAxisID: 'y1',
-                            }
-                        ]
+                        datasets: chartDatasets
                     },
                     options: {
                         responsive: true,
@@ -64,7 +70,7 @@
                             title: {
                                 display: true,
                                 color: useDarkMode ? "#fff" : "#000",
-                                text: decodeHTMLEntities('@translator.Translate(userLanguage, "Expenses and Distance Traveled by Month")')
+                                text: decodeHTMLEntities('@translator.Translate(userLanguage, "Expenses by Month")')
                             },
                             legend: {
                                 display: false,
@@ -80,13 +86,15 @@
                                     color: useDarkMode ? "#fff" : "#000"
                                 }
                             },
-                            y1: {
-                                beginAtZero: true,
-                                position: 'right',
-                                ticks: {
-                                    color: useDarkMode ? "#fff" : "#000"
+                            ...(hasDistanceData ? {
+                                y1: {
+                                    beginAtZero: true,
+                                    position: 'right',
+                                    ticks: {
+                                        color: useDarkMode ? "#fff" : "#000"
+                                    }
                                 }
-                            },
+                            } : {}),
                             x: {
                                 ticks: {
                                     color: useDarkMode ? "#fff" : "#000"
