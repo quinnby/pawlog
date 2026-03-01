@@ -15,6 +15,10 @@
     <script src="~/js/vehicle.js?v=@StaticHelper.VersionNumber"></script>
     <script src="~/js/servicerecord.js?v=@StaticHelper.VersionNumber"></script>
     <script src="~/js/healthrecord.js?v=@StaticHelper.VersionNumber"></script>
+    <script src="~/js/vaccinationrecord.js?v=@StaticHelper.VersionNumber"></script>
+    <script src="~/js/medicationrecord.js?v=@StaticHelper.VersionNumber"></script>
+    <script src="~/js/vetvisitrecord.js?v=@StaticHelper.VersionNumber"></script>
+    <script src="~/js/licensingrecord.js?v=@StaticHelper.VersionNumber"></script>
     <script src="~/js/gasrecord.js?v=@StaticHelper.VersionNumber"></script>
     <script src="~/js/collisionrecord.js?v=@StaticHelper.VersionNumber"></script>
     <script src="~/js/taxrecord.js?v=@StaticHelper.VersionNumber"></script>
@@ -58,6 +62,18 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link resizable-nav-link" id="healthrecord-tab" data-bs-toggle="tab" data-bs-target="#healthrecord-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-heart-pulse"></i><span class="ms-2">Health Records</span></button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link resizable-nav-link" id="vaccination-tab" data-bs-toggle="tab" data-bs-target="#vaccination-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-shield-plus"></i><span class="ms-2">Vaccinations</span></button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link resizable-nav-link" id="medication-tab" data-bs-toggle="tab" data-bs-target="#medication-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-capsule"></i><span class="ms-2">Medications</span></button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link resizable-nav-link" id="vetvisit-tab" data-bs-toggle="tab" data-bs-target="#vetvisit-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-hospital"></i><span class="ms-2">Vet Visits</span></button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link resizable-nav-link" id="licensing-tab" data-bs-toggle="tab" data-bs-target="#licensing-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-card-text"></i><span class="ms-2">Licensing</span></button>
                     </li>
                     <li class="nav-item" role="presentation" style="order: @userConfig.TabOrder.FindIndex(x=>x == ImportMode.RepairRecord)">
                         <button class="nav-link resizable-nav-link @StaticHelper.DefaultActiveTab(userConfig, ImportMode.RepairRecord)" id="accident-tab" data-bs-toggle="tab" data-bs-target="#accident-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-exclamation-octagon"></i><span class="ms-2">@translator.Translate(userLanguage, "Repairs")</span></button>
@@ -106,6 +122,18 @@
                             </li>
                             <li class="nav-item text-truncate" role="presentation">
                                 <button class="nav-link resizable-nav-link" id="healthrecord-tab" data-bs-toggle="tab" data-bs-target="#healthrecord-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-heart-pulse"></i><span class="ms-2">Health Records</span></button>
+                            </li>
+                            <li class="nav-item text-truncate" role="presentation">
+                                <button class="nav-link resizable-nav-link" id="vaccination-tab" data-bs-toggle="tab" data-bs-target="#vaccination-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-shield-plus"></i><span class="ms-2">Vaccinations</span></button>
+                            </li>
+                            <li class="nav-item text-truncate" role="presentation">
+                                <button class="nav-link resizable-nav-link" id="medication-tab" data-bs-toggle="tab" data-bs-target="#medication-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-capsule"></i><span class="ms-2">Medications</span></button>
+                            </li>
+                            <li class="nav-item text-truncate" role="presentation">
+                                <button class="nav-link resizable-nav-link" id="vetvisit-tab" data-bs-toggle="tab" data-bs-target="#vetvisit-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-hospital"></i><span class="ms-2">Vet Visits</span></button>
+                            </li>
+                            <li class="nav-item text-truncate" role="presentation">
+                                <button class="nav-link resizable-nav-link" id="licensing-tab" data-bs-toggle="tab" data-bs-target="#licensing-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-card-text"></i><span class="ms-2">Licensing</span></button>
                             </li>
                             <li class="nav-item text-truncate" role="presentation" style="order: @userConfig.TabOrder.FindIndex(x => x == ImportMode.RepairRecord)">
                                 <button class="nav-link resizable-nav-link @StaticHelper.DefaultActiveTab(userConfig, ImportMode.RepairRecord)" id="accident-tab" data-bs-toggle="tab" data-bs-target="#accident-tab-pane" type="button" role="tab" aria-selected="false"><i class="bi bi-exclamation-octagon"></i><span class="ms-2">@translator.Translate(userLanguage, "Repairs")</span></button>
@@ -176,6 +204,18 @@
         <li class="nav-item d-flex" role="presentation">
             <button class="nav-link flex-grow-1 text-start" id="healthrecord-tab" data-bs-toggle="tab" data-bs-target="#healthrecord-tab-pane" type="button" role="tab" aria-selected="false"><span class="display-3 ms-2"><i class="bi bi-heart-pulse me-2"></i>Health Records</span></button>
         </li>
+        <li class="nav-item d-flex" role="presentation">
+            <button class="nav-link flex-grow-1 text-start" id="vaccination-tab" data-bs-toggle="tab" data-bs-target="#vaccination-tab-pane" type="button" role="tab" aria-selected="false"><span class="display-3 ms-2"><i class="bi bi-shield-plus me-2"></i>Vaccinations</span></button>
+        </li>
+        <li class="nav-item d-flex" role="presentation">
+            <button class="nav-link flex-grow-1 text-start" id="medication-tab" data-bs-toggle="tab" data-bs-target="#medication-tab-pane" type="button" role="tab" aria-selected="false"><span class="display-3 ms-2"><i class="bi bi-capsule me-2"></i>Medications</span></button>
+        </li>
+        <li class="nav-item d-flex" role="presentation">
+            <button class="nav-link flex-grow-1 text-start" id="vetvisit-tab" data-bs-toggle="tab" data-bs-target="#vetvisit-tab-pane" type="button" role="tab" aria-selected="false"><span class="display-3 ms-2"><i class="bi bi-hospital me-2"></i>Vet Visits</span></button>
+        </li>
+        <li class="nav-item d-flex" role="presentation">
+            <button class="nav-link flex-grow-1 text-start" id="licensing-tab" data-bs-toggle="tab" data-bs-target="#licensing-tab-pane" type="button" role="tab" aria-selected="false"><span class="display-3 ms-2"><i class="bi bi-card-text me-2"></i>Licensing</span></button>
+        </li>
         <li class="nav-item d-flex" role="presentation" style="order: @userConfig.TabOrder.FindIndex(x => x == ImportMode.RepairRecord)">
             <button class="nav-link flex-grow-1 text-start @StaticHelper.DefaultActiveTab(userConfig, ImportMode.RepairRecord)" id="accident-tab" data-bs-toggle="tab" data-bs-target="#accident-tab-pane" type="button" role="tab" aria-selected="false"><span class="display-3 ms-2"><i class="bi bi-exclamation-octagon me-2"></i>@translator.Translate(userLanguage, "Repairs")</span></button>
         </li>
@@ -209,6 +249,10 @@
     <div class="tab-content" id="vehicleTabContent">
         <div class="tab-pane fade" id="servicerecord-tab-pane" role="tabpanel" tabindex="0"></div>
         <div class="tab-pane fade" id="healthrecord-tab-pane" role="tabpanel" tabindex="0"></div>
+        <div class="tab-pane fade" id="vaccination-tab-pane" role="tabpanel" tabindex="0"></div>
+        <div class="tab-pane fade" id="medication-tab-pane" role="tabpanel" tabindex="0"></div>
+        <div class="tab-pane fade" id="vetvisit-tab-pane" role="tabpanel" tabindex="0"></div>
+        <div class="tab-pane fade" id="licensing-tab-pane" role="tabpanel" tabindex="0"></div>
         <div class="tab-pane fade" id="gas-tab-pane" role="tabpanel" tabindex="0"></div>
         <div class="tab-pane fade" id="tax-tab-pane" role="tabpanel" tabindex="0"></div>
         <div class="tab-pane fade" id="notes-tab-pane" role="tabpanel" tabindex="0"></div>

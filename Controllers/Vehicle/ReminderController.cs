@@ -164,7 +164,11 @@ namespace CarCareTracker.Controllers
                 CustomMileageInterval = result.CustomMileageInterval,
                 CustomMonthInterval = result.CustomMonthInterval,
                 CustomMonthIntervalUnit = result.CustomMonthIntervalUnit,
-                Tags = result.Tags
+                Tags = result.Tags,
+                // Phase 5 – pet care reminder fields
+                PetReminderType = result.PetReminderType,
+                LinkedRecordType = result.LinkedRecordType,
+                LinkedRecordId = result.LinkedRecordId
             };
             return PartialView("Reminder/_ReminderRecordModal", convertedResult);
         }
@@ -188,6 +192,63 @@ namespace CarCareTracker.Controllers
         {
             var result = DeleteReminderRecordWithChecks(reminderRecordId);
             return Json(result);
+        }
+
+        // Phase 5 – Sync a reminder from a linked pet-health record (vaccination, medication, or licensing).
+        // Called after a save when the source record has ReminderEnabled / RenewalReminderEnabled = true.
+        // If reminderEnabled is false, any previously linked reminder is deleted.
+        private void SyncReminderFromLinkedRecord(
+            int petId,
+            bool reminderEnabled,
+            string dueDateString,
+            string description,
+            PetReminderType petReminderType,
+            ReminderLinkedRecordType linkedRecordType,
+            int linkedRecordId)
+        {
+            // Find any existing reminder linked to this source record
+            var existing = _reminderRecordDataAccess
+                .GetReminderRecordsByVehicleId(petId)
+                .FirstOrDefault(r =>
+                    r.LinkedRecordType == linkedRecordType &&
+                    r.LinkedRecordId == linkedRecordId &&
+                    r.LinkedRecordId != 0);
+
+            if (!reminderEnabled)
+            {
+                // Remove stale linked reminder if present
+                if (existing != null && existing.Id != default)
+                    _reminderRecordDataAccess.DeleteReminderRecordById(existing.Id);
+                return;
+            }
+
+            // Parse the due date; bail out silently if none provided
+            if (!DateTime.TryParse(dueDateString, out DateTime dueDate))
+                return;
+
+            if (existing != null && existing.Id != default)
+            {
+                // Update in place so the user doesn’t lose any custom settings they applied
+                existing.Date = dueDate;
+                existing.Description = description;
+                existing.PetReminderType = petReminderType;
+                _reminderRecordDataAccess.SaveReminderRecordToVehicle(existing);
+            }
+            else
+            {
+                var newReminder = new ReminderRecord
+                {
+                    VehicleId = petId,
+                    Date = dueDate,
+                    Description = description,
+                    Metric = ReminderMetric.Date,   // pet reminders are always date-based by default
+                    IsRecurring = false,
+                    PetReminderType = petReminderType,
+                    LinkedRecordType = linkedRecordType,
+                    LinkedRecordId = linkedRecordId
+                };
+                _reminderRecordDataAccess.SaveReminderRecordToVehicle(newReminder);
+            }
         }
     }
 }

@@ -64,6 +64,11 @@ if (!string.IsNullOrWhiteSpace(builder.Configuration["POSTGRES_CONNECTION"])){
     builder.Services.AddSingleton<IUserHouseholdDataAccess, PGUserHouseholdDataAccess>();
     builder.Services.AddSingleton<IApiKeyRecordDataAccess, PGApiKeyRecordDataAccess>();
     builder.Services.AddSingleton<IHealthRecordDataAccess, PGHealthRecordDataAccess>();
+    // Phase 4 – specialized pet-health record types
+    builder.Services.AddSingleton<IVaccinationRecordDataAccess, PGVaccinationRecordDataAccess>();
+    builder.Services.AddSingleton<IMedicationRecordDataAccess, PGMedicationRecordDataAccess>();
+    builder.Services.AddSingleton<IVetVisitRecordDataAccess, PGVetVisitRecordDataAccess>();
+    builder.Services.AddSingleton<ILicensingRecordDataAccess, PGLicensingRecordDataAccess>();
 }
 else
 {
@@ -90,6 +95,11 @@ else
     builder.Services.AddSingleton<IUserHouseholdDataAccess, UserHouseholdDataAccess>();
     builder.Services.AddSingleton<IApiKeyRecordDataAccess, ApiKeyRecordDataAccess>();
     builder.Services.AddSingleton<IHealthRecordDataAccess, HealthRecordDataAccess>();
+    // Phase 4 – specialized pet-health record types
+    builder.Services.AddSingleton<IVaccinationRecordDataAccess, VaccinationRecordDataAccess>();
+    builder.Services.AddSingleton<IMedicationRecordDataAccess, MedicationRecordDataAccess>();
+    builder.Services.AddSingleton<IVetVisitRecordDataAccess, VetVisitRecordDataAccess>();
+    builder.Services.AddSingleton<ILicensingRecordDataAccess, LicensingRecordDataAccess>();
 }
 
 //configure helpers

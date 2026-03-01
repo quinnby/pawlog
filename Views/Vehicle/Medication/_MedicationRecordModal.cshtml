@@ -1,0 +1,123 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@model MedicationRecordInput
+@{
+    var isNew = Model.Id == 0;
+    var userConfig = config.GetUserConfig(User);
+}
+<div class="modal-header">
+    <h5 class="modal-title">@(isNew ? "Add Medication Record" : "Edit Medication Record")</h5>
+    <button type="button" class="btn-close" onclick="hideAddMedicationRecordModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body" onkeydown="handleEnter(this)">
+    <form>
+        <div class="form-group">
+            <div class="row">
+                <!-- LEFT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <input type="text" id="workAroundInput" style="height:0px; width:0px; display:none;">
+
+                    <label for="medicationStartDate">Start Date</label>
+                    <div class="input-group">
+                        <input type="text" id="medicationStartDate" class="form-control" placeholder="Date started" value="@Model.Date">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+
+                    <label for="medicationName" class="mt-2">Medication Name</label>
+                    <input type="text" id="medicationName" class="form-control" placeholder="e.g. Apoquel, Heartgard" value="@Model.MedicationName">
+
+                    <label for="medicationDosage" class="mt-2">Dosage</label>
+                    <div class="input-group">
+                        <input type="text" id="medicationDosage" class="form-control" placeholder="Amount" value="@Model.Dosage">
+                        <input type="text" id="medicationUnit" class="form-control" style="max-width:120px;" placeholder="Unit (mg, mL…)" value="@Model.Unit">
+                    </div>
+
+                    <label for="medicationFrequency" class="mt-2">Frequency (optional)</label>
+                    <input type="text" id="medicationFrequency" class="form-control" placeholder="e.g. Once daily, Every 12 hours" value="@Model.Frequency">
+
+                    <label for="medicationRoute" class="mt-2">Route (optional)</label>
+                    <input type="text" id="medicationRoute" class="form-control" placeholder="e.g. Oral, Topical, Injectable" value="@Model.Route">
+
+                    <label for="medicationEndDate" class="mt-2">End Date (optional)</label>
+                    <div class="input-group">
+                        <input type="text" id="medicationEndDate" class="form-control" placeholder="Date course ends" value="@Model.EndDate">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+
+                    <label for="medicationTag" class="mt-2">Tags (optional)</label>
+                    <select multiple class="form-select" id="medicationTag">
+                        @foreach (string tag in Model.Tags)
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </select>
+
+                    @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <label for="medicationPrescribingVet" class="mt-2 mt-md-0">Prescribing Vet (optional)</label>
+                    <input type="text" id="medicationPrescribingVet" class="form-control" placeholder="Veterinarian name" value="@Model.PrescribingVet">
+
+                    <label for="medicationPurpose" class="mt-2">Purpose / Indication (optional)</label>
+                    <input type="text" id="medicationPurpose" class="form-control" placeholder="Reason for medication" value="@Model.Purpose">
+
+                    <label for="medicationRefillDate" class="mt-2">Refill Date (optional)</label>
+                    <div class="input-group">
+                        <input type="text" id="medicationRefillDate" class="form-control" placeholder="When a refill is needed" value="@Model.RefillDate">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+
+                    <label for="medicationCost" class="mt-2">Cost (optional)</label>
+                    <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)"
+                           id="medicationCost" class="form-control" placeholder="0.00" value="@(isNew ? "" : Model.Cost)">
+
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="medicationIsActive" @(Model.IsActive ? "checked" : "")>
+                        <label class="form-check-label" for="medicationIsActive">Currently Active</label>
+                    </div>
+
+                    <div class="form-check mt-1">
+                        <input class="form-check-input" type="checkbox" id="medicationReminderEnabled" @(Model.ReminderEnabled ? "checked" : "")>
+                        <label class="form-check-label" for="medicationReminderEnabled">
+                            Enable Refill Reminder
+                            <small class="text-muted d-block">Reminder hook stored on RefillDate. Full wiring planned for a later phase.</small>
+                        </label>
+                    </div>
+
+                    <label for="medicationNotes" class="mt-2">Notes (optional)<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
+                    <textarea id="medicationNotes" class="form-control" rows="4">@Model.Notes</textarea>
+
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_UploadedFiles", Model.Files)
+                        @await Html.PartialAsync("_FileUploader", Model.Files.Any())
+                    </div>
+                    <div id="filesPendingUpload"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    @if (!isNew)
+    {
+        <div class="btn-group" style="margin-right:auto;">
+            <button type="button" class="btn btn-md mt-1 mb-1 btn-danger" onclick="deleteMedicationRecord(@Model.Id)">Delete</button>
+        </div>
+    }
+    <button type="button" class="btn btn-secondary" onclick="hideAddMedicationRecordModal()">Cancel</button>
+    @if (isNew)
+    {
+        <button type="button" class="btn btn-primary" onclick="saveMedicationRecordToVehicle()">Add Medication</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary" onclick="saveMedicationRecordToVehicle(true)">Save Medication</button>
+    }
+</div>
+<script>
+    function getMedicationRecordModelData() {
+        return { id: @Model.Id, vehicleId: @Model.VehicleId };
+    }
+</script>

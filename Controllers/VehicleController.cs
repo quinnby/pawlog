@@ -43,6 +43,11 @@ namespace CarCareTracker.Controllers
         private readonly IEventLogic _eventLogic;
         private readonly IExtraFieldDataAccess _extraFieldDataAccess;
         private readonly IHealthRecordDataAccess _healthRecordDataAccess;
+        // Phase 4 – specialized pet-health record types
+        private readonly IVaccinationRecordDataAccess _vaccinationRecordDataAccess;
+        private readonly IMedicationRecordDataAccess _medicationRecordDataAccess;
+        private readonly IVetVisitRecordDataAccess _vetVisitRecordDataAccess;
+        private readonly ILicensingRecordDataAccess _licensingRecordDataAccess;
 
         public VehicleController(ILogger<VehicleController> logger,
             IFileHelper fileHelper,
@@ -72,7 +77,12 @@ namespace CarCareTracker.Controllers
             IInspectionRecordDataAccess inspectionRecordDataAccess,
             IInspectionRecordTemplateDataAccess inspectionRecordTemplateDataAccess,
             IEquipmentRecordDataAccess equipmentRecordDataAccess,
-            IHealthRecordDataAccess healthRecordDataAccess)
+            IHealthRecordDataAccess healthRecordDataAccess,
+            // Phase 4 – specialized pet-health record types
+            IVaccinationRecordDataAccess vaccinationRecordDataAccess,
+            IMedicationRecordDataAccess medicationRecordDataAccess,
+            IVetVisitRecordDataAccess vetVisitRecordDataAccess,
+            ILicensingRecordDataAccess licensingRecordDataAccess)
         {
             _logger = logger;
             _dataAccess = dataAccess;
@@ -103,6 +113,11 @@ namespace CarCareTracker.Controllers
             _webEnv = webEnv;
             _config = config;
             _healthRecordDataAccess = healthRecordDataAccess;
+            // Phase 4 – specialized pet-health record types
+            _vaccinationRecordDataAccess = vaccinationRecordDataAccess;
+            _medicationRecordDataAccess = medicationRecordDataAccess;
+            _vetVisitRecordDataAccess = vetVisitRecordDataAccess;
+            _licensingRecordDataAccess = licensingRecordDataAccess;
         }
         private int GetUserID()
         {

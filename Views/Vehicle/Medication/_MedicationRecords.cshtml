@@ -1,0 +1,109 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@model List<MedicationRecord>
+@{
+    var userConfig = config.GetUserConfig(User);
+    var recordTags = Model.SelectMany(x => x.Tags).Distinct();
+}
+<div class="d-flex flex-column vehicleTabPane">
+<div class="row">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="badge bg-success" data-aggregate-type="count">@($"# of Medications: {Model.Count()}")</span>
+            <span class="badge bg-info text-dark" data-aggregate-type="count">Active: @Model.Count(x => x.IsActive)</span>
+            @foreach (string recordTag in recordTags)
+            {
+                <span onclick="filterTable('medication-tab-pane', this)" class="user-select-none rounded-pill badge bg-secondary tagfilter" style="cursor:pointer;">@recordTag</span>
+            }
+        </div>
+        <div class="lubelogger-record-add">
+            <div class="btn-group">
+                <button onclick="showAddMedicationRecordModal()" class="btn btn-primary btn-md mt-1 mb-1"><i class="bi bi-capsule me-2"></i>Add Medication</button>
+                <button type="button" class="btn btn-md btn-primary btn-md mt-1 mb-1 dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu record-dropdown">
+                    <li><a class="dropdown-item" href="#" onclick="printTab()">Print</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="searchTableRows('medication-tab-pane')">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row vehicleDetailTabContainer flex-grow-1">
+    <div class="col-12">
+        @if (Model.Any())
+        {
+        <table class="table table-hover">
+            <thead class="sticky-top">
+                <tr class="d-flex">
+                    <th scope="col" class="col-2 flex-grow-1 text-truncate">Start Date</th>
+                    <th scope="col" class="col-3 text-truncate">Medication</th>
+                    <th scope="col" class="col-2 text-truncate d-none d-md-table-cell">Dosage</th>
+                    <th scope="col" class="col-2 text-truncate d-none d-md-table-cell">Frequency</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-lg-table-cell">Status</th>
+                    <th scope="col" class="col-1 text-truncate d-none d-lg-table-cell">Reminder</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (MedicationRecord record in Model)
+                {
+                    <tr class="d-flex user-select-none" style="cursor:pointer;"
+                        data-rowId="@record.Id"
+                        data-tags='@string.Join(" ", record.Tags)'
+                        onclick="handleTableRowClick(this, showEditMedicationRecordModal, @record.Id)">
+                        <td class="col-2 flex-grow-1 text-truncate">@record.Date.ToShortDateString()</td>
+                        <td class="col-3 text-truncate">
+                            @record.MedicationName
+                            @if (!string.IsNullOrWhiteSpace(record.Notes))
+                            {
+                                <i class="bi bi-chat-text ms-1 text-muted" title="Has notes"></i>
+                            }
+                            @if (record.Files.Any())
+                            {
+                                <i class="bi bi-paperclip ms-1 text-muted" title="Has attachments"></i>
+                            }
+                        </td>
+                        <td class="col-2 text-truncate d-none d-md-table-cell">@record.Dosage @record.Unit</td>
+                        <td class="col-2 text-truncate d-none d-md-table-cell">@record.Frequency</td>
+                        <td class="col-1 text-truncate d-none d-lg-table-cell">
+                            @if (record.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td class="col-1 text-truncate d-none d-lg-table-cell">
+                            @if (record.ReminderEnabled)
+                            {
+                                <i class="bi bi-bell-fill text-primary" title="Reminder enabled"></i>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        }
+        else
+        {
+            <div class="d-flex justify-content-center align-items-center mt-4">
+                <div class="text-center text-muted">
+                    <i class="bi bi-capsule display-4"></i>
+                    <p class="mt-2">No medication records yet. Add the first one!</p>
+                    <button onclick="showAddMedicationRecordModal()" class="btn btn-outline-primary"><i class="bi bi-plus-lg me-2"></i>Add Medication</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+</div>
+
+<div class="modal fade" data-bs-focus="false" id="medicationRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="medicationRecordModalContent">
+        </div>
+    </div>
+</div>

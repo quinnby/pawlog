@@ -286,7 +286,11 @@ function getAndValidateReminderRecordValues() {
         customMileageInterval: customMileageInterval,
         customMonthInterval: customMonthInterval,
         customMonthIntervalUnit: customMonthIntervalUnit,
-        tags: reminderTags
+        tags: reminderTags,
+        // Phase 5 – pet care reminder fields
+        petReminderType: $("#reminderPetType").val() || 'Custom',
+        linkedRecordType: getReminderRecordModelData().linkedRecordType || 'None',
+        linkedRecordId: getReminderRecordModelData().linkedRecordId || 0
     }
 }
 function createPlanRecordFromReminder(reminderRecordId) {

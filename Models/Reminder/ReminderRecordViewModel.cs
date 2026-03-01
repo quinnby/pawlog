@@ -24,5 +24,10 @@
         /// </summary>
         public bool IsRecurring { get; set; } = false;
         public List<string> Tags { get; set; } = new List<string>();
+
+        // Phase 5 – Pet care reminder fields
+        public PetReminderType PetReminderType { get; set; } = PetReminderType.Custom;
+        public ReminderLinkedRecordType LinkedRecordType { get; set; } = ReminderLinkedRecordType.None;
+        public int LinkedRecordId { get; set; } = 0;
     }
 }

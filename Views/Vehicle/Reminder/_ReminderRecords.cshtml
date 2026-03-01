@@ -56,6 +56,12 @@
                         </li>
                         <li class="dropdown-item">
                             <div class="list-group-item">
+                                <input class="form-check-input col-visible-toggle" data-column-toggle='remindertype' onChange="showTableColumns(this, 'ReminderRecord')" type="checkbox" id="chkCol_ReminderType" checked>
+                                <label class="form-check-label stretched-link" for="chkCol_ReminderType">@translator.Translate(userLanguage, "Reminder Type")</label>
+                            </div>
+                        </li>
+                        <li class="dropdown-item">
+                            <div class="list-group-item">
                                 <input class="form-check-input col-visible-toggle" data-column-toggle='metric' onChange="showTableColumns(this, 'ReminderRecord')" type="checkbox" id="chkCol_Metric" checked>
                                 <label class="form-check-label stretched-link" for="chkCol_Metric">@translator.Translate(userLanguage, "Metric")</label>
                             </div>
@@ -126,6 +132,7 @@
             <thead class="sticky-top">
                 <tr class="d-flex">
                     <th scope="col" data-column="urgency" class="col-2 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Urgency")</th>
+                    <th scope="col" data-column="remindertype" class="col-2 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Reminder Type")</th>
                     <th scope="col" data-column="metric" class="col-2 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Metric")</th>
                     <th scope="col" data-column="date" style="display:none;" class="col-2 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Date")</th>
                     <th scope="col" data-column="odometer" style="display:none;"  class="col-2 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Odometer")</th>
@@ -161,6 +168,23 @@
                             {
                                 <span class="badge text-bg-success">@translator.Translate(userLanguage, "Not Urgent")</span>
                             }
+                        </td>
+                        @* Phase 5: Reminder type column *@
+                        <td class="col-2 flex-grow-1 flex-shrink-1 text-truncate" data-column="remindertype">
+                            @(reminderRecord.PetReminderType switch {
+                                PetReminderType.VaccinationDue          => translator.Translate(userLanguage, "Vaccination Due"),
+                                PetReminderType.MedicationRefill        => translator.Translate(userLanguage, "Medication Refill"),
+                                PetReminderType.MedicationDoseSchedule  => translator.Translate(userLanguage, "Med. Dose Schedule"),
+                                PetReminderType.LicenseRenewal          => translator.Translate(userLanguage, "License Renewal"),
+                                PetReminderType.AnnualCheckup           => translator.Translate(userLanguage, "Annual Checkup"),
+                                PetReminderType.FleaTickPrevention      => translator.Translate(userLanguage, "Flea/Tick Prevention"),
+                                PetReminderType.HeartwormPrevention     => translator.Translate(userLanguage, "Heartworm Prevention"),
+                                PetReminderType.Deworming               => translator.Translate(userLanguage, "Deworming"),
+                                PetReminderType.Grooming                => translator.Translate(userLanguage, "Grooming"),
+                                PetReminderType.DentalCleaning          => translator.Translate(userLanguage, "Dental Cleaning"),
+                                PetReminderType.WeightCheck             => translator.Translate(userLanguage, "Weight Check"),
+                                _                                       => translator.Translate(userLanguage, "Custom")
+                            })
                         </td>
                         <td class="col-2 text-truncate flex-grow-1 flex-shrink-1" data-column="metric" data-record-type="cost">
                             @if (reminderRecord.Metric == ReminderMetric.Date)

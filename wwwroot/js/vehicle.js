@@ -10,6 +10,19 @@
             case "healthrecord-tab":
                 getVehicleHealthRecords(vehicleId);
                 break;
+            // Phase 4 – specialized pet-health record types
+            case "vaccination-tab":
+                getVehicleVaccinationRecords(vehicleId);
+                break;
+            case "medication-tab":
+                getVehicleMedicationRecords(vehicleId);
+                break;
+            case "vetvisit-tab":
+                getVehicleVetVisitRecords(vehicleId);
+                break;
+            case "licensing-tab":
+                getVehicleLicensingRecords(vehicleId);
+                break;
             case "notes-tab":
                 getVehicleNotes(vehicleId);
                 break;
@@ -56,6 +69,19 @@
                     break;
                 case "healthrecord-tab":
                     $("#healthrecord-tab-pane").html("");
+                    break;
+                // Phase 4 – specialized pet-health record types
+                case "vaccination-tab":
+                    $("#vaccination-tab-pane").html("");
+                    break;
+                case "medication-tab":
+                    $("#medication-tab-pane").html("");
+                    break;
+                case "vetvisit-tab":
+                    $("#vetvisit-tab-pane").html("");
+                    break;
+                case "licensing-tab":
+                    $("#licensing-tab-pane").html("");
                     break;
                 case "gas-tab":
                     $("#gas-tab-pane").html("");
@@ -128,6 +154,39 @@ function getVehicleHealthRecords(vehicleId) {
     $.get(`/Vehicle/GetHealthRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
         if (data) {
             $("#healthrecord-tab-pane").html(data);
+            restoreScrollPosition();
+        }
+    });
+}
+// Phase 4 – specialized pet-health record type loaders
+function getVehicleVaccinationRecords(vehicleId) {
+    $.get(`/Vehicle/GetVaccinationRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
+        if (data) {
+            $("#vaccination-tab-pane").html(data);
+            restoreScrollPosition();
+        }
+    });
+}
+function getVehicleMedicationRecords(vehicleId) {
+    $.get(`/Vehicle/GetMedicationRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
+        if (data) {
+            $("#medication-tab-pane").html(data);
+            restoreScrollPosition();
+        }
+    });
+}
+function getVehicleVetVisitRecords(vehicleId) {
+    $.get(`/Vehicle/GetVetVisitRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
+        if (data) {
+            $("#vetvisit-tab-pane").html(data);
+            restoreScrollPosition();
+        }
+    });
+}
+function getVehicleLicensingRecords(vehicleId) {
+    $.get(`/Vehicle/GetLicensingRecordsByVehicleId?vehicleId=${vehicleId}`, function (data) {
+        if (data) {
+            $("#licensing-tab-pane").html(data);
             restoreScrollPosition();
         }
     });

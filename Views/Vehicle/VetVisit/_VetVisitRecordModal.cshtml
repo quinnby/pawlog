@@ -1,0 +1,118 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@model VetVisitRecordInput
+@{
+    var isNew = Model.Id == 0;
+    var userConfig = config.GetUserConfig(User);
+}
+<div class="modal-header">
+    <h5 class="modal-title">@(isNew ? "Add Vet Visit" : "Edit Vet Visit")</h5>
+    <button type="button" class="btn-close" onclick="hideAddVetVisitRecordModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body" onkeydown="handleEnter(this)">
+    <form>
+        <div class="form-group">
+            <div class="row">
+                <!-- LEFT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <input type="text" id="workAroundInput" style="height:0px; width:0px; display:none;">
+
+                    <label for="vetVisitDate">Visit Date</label>
+                    <div class="input-group">
+                        <input type="text" id="vetVisitDate" class="form-control" placeholder="Date of visit" value="@Model.Date">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                    </div>
+
+                    <label for="vetVisitClinic" class="mt-2">Clinic (optional)</label>
+                    <input type="text" id="vetVisitClinic" class="form-control" placeholder="Name of veterinary clinic" value="@Model.Clinic">
+
+                    <label for="vetVisitVeterinarian" class="mt-2">Veterinarian (optional)</label>
+                    <input type="text" id="vetVisitVeterinarian" class="form-control" placeholder="Attending veterinarian name" value="@Model.Veterinarian">
+
+                    <label for="vetVisitReason" class="mt-2">Reason for Visit</label>
+                    <input type="text" id="vetVisitReason" class="form-control" placeholder="e.g. Annual exam, Limping" value="@Model.ReasonForVisit">
+
+                    <label for="vetVisitSymptoms" class="mt-2">Symptoms Reported (optional)</label>
+                    <textarea id="vetVisitSymptoms" class="form-control" rows="2" placeholder="Symptoms described by owner">@Model.SymptomsReported</textarea>
+
+                    <label for="vetVisitCost" class="mt-2">Cost (optional)</label>
+                    <input type="text" inputmode="decimal" onkeydown="interceptDecimalKeys(event)" onkeyup="fixDecimalInput(this, 2)"
+                           id="vetVisitCost" class="form-control" placeholder="0.00" value="@(isNew ? "" : Model.Cost)">
+
+                    <label for="vetVisitTag" class="mt-2">Tags (optional)</label>
+                    <select multiple class="form-select" id="vetVisitTag">
+                        @foreach (string tag in Model.Tags)
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </select>
+
+                    @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="col-md-6 col-12">
+                    <label for="vetVisitDiagnosis" class="mt-2 mt-md-0">Diagnosis (optional)</label>
+                    <input type="text" id="vetVisitDiagnosis" class="form-control" placeholder="Vet's diagnosis" value="@Model.Diagnosis">
+
+                    <label for="vetVisitTreatment" class="mt-2">Treatment Provided (optional)</label>
+                    <textarea id="vetVisitTreatment" class="form-control" rows="3" placeholder="Treatment given during this visit">@Model.TreatmentProvided</textarea>
+
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="vetVisitFollowUpNeeded"
+                               @(Model.FollowUpNeeded ? "checked" : "")
+                               onchange="toggleVetVisitFollowUpDate(this)">
+                        <label class="form-check-label" for="vetVisitFollowUpNeeded">Follow-Up Needed</label>
+                    </div>
+
+                    <div id="vetVisitFollowUpDateRow" @(Model.FollowUpNeeded ? "" : "style=\"display:none;\"")>
+                        <label for="vetVisitFollowUpDate" class="mt-2">Follow-Up Date</label>
+                        <div class="input-group">
+                            <input type="text" id="vetVisitFollowUpDate" class="form-control" placeholder="Suggested follow-up date" value="@Model.FollowUpDate">
+                            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                        </div>
+                    </div>
+
+                    <label for="vetVisitNotes" class="mt-2">Notes (optional)<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
+                    <textarea id="vetVisitNotes" class="form-control" rows="4">@Model.Notes</textarea>
+
+                    <div class="mt-2">
+                        @await Html.PartialAsync("_UploadedFiles", Model.Files)
+                        @await Html.PartialAsync("_FileUploader", Model.Files.Any())
+                    </div>
+                    <div id="filesPendingUpload"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    @if (!isNew)
+    {
+        <div class="btn-group" style="margin-right:auto;">
+            <button type="button" class="btn btn-md mt-1 mb-1 btn-danger" onclick="deleteVetVisitRecord(@Model.Id)">Delete</button>
+        </div>
+    }
+    <button type="button" class="btn btn-secondary" onclick="hideAddVetVisitRecordModal()">Cancel</button>
+    @if (isNew)
+    {
+        <button type="button" class="btn btn-primary" onclick="saveVetVisitRecordToVehicle()">Add Vet Visit</button>
+    }
+    else
+    {
+        <button type="button" class="btn btn-primary" onclick="saveVetVisitRecordToVehicle(true)">Save Vet Visit</button>
+    }
+</div>
+<script>
+    function getVetVisitRecordModelData() {
+        return { id: @Model.Id, vehicleId: @Model.VehicleId };
+    }
+    function toggleVetVisitFollowUpDate(checkbox) {
+        if (checkbox.checked) {
+            $("#vetVisitFollowUpDateRow").show();
+            initDatePicker($('#vetVisitFollowUpDate'));
+        } else {
+            $("#vetVisitFollowUpDateRow").hide();
+        }
+    }
+</script>

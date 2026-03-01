@@ -17,6 +17,22 @@
             <div class="row">
                 <div class="col-md-6 col-12" id="reminderOptions">
                     <input type="text" id="workAroundInput" style="height:0px; width:0px; display:none;">
+                    @* Phase 5: Pet reminder type selector *@
+                    <label for="reminderPetType">@translator.Translate(userLanguage, "Reminder Type")</label>
+                    <select class="form-select mb-2" id="reminderPetType">
+                        <!option value="Custom" @(Model.PetReminderType == PetReminderType.Custom ? "selected" : "")>@translator.Translate(userLanguage, "Custom")</!option>
+                        <!option value="VaccinationDue" @(Model.PetReminderType == PetReminderType.VaccinationDue ? "selected" : "")>@translator.Translate(userLanguage, "Vaccination Due")</!option>
+                        <!option value="MedicationRefill" @(Model.PetReminderType == PetReminderType.MedicationRefill ? "selected" : "")>@translator.Translate(userLanguage, "Medication Refill")</!option>
+                        <!option value="MedicationDoseSchedule" @(Model.PetReminderType == PetReminderType.MedicationDoseSchedule ? "selected" : "")>@translator.Translate(userLanguage, "Medication Dose Schedule")</!option>
+                        <!option value="LicenseRenewal" @(Model.PetReminderType == PetReminderType.LicenseRenewal ? "selected" : "")>@translator.Translate(userLanguage, "License Renewal")</!option>
+                        <!option value="AnnualCheckup" @(Model.PetReminderType == PetReminderType.AnnualCheckup ? "selected" : "")>@translator.Translate(userLanguage, "Annual Checkup")</!option>
+                        <!option value="FleaTickPrevention" @(Model.PetReminderType == PetReminderType.FleaTickPrevention ? "selected" : "")>@translator.Translate(userLanguage, "Flea / Tick Prevention")</!option>
+                        <!option value="HeartwormPrevention" @(Model.PetReminderType == PetReminderType.HeartwormPrevention ? "selected" : "")>@translator.Translate(userLanguage, "Heartworm Prevention")</!option>
+                        <!option value="Deworming" @(Model.PetReminderType == PetReminderType.Deworming ? "selected" : "")>@translator.Translate(userLanguage, "Deworming")</!option>
+                        <!option value="Grooming" @(Model.PetReminderType == PetReminderType.Grooming ? "selected" : "")>@translator.Translate(userLanguage, "Grooming")</!option>
+                        <!option value="DentalCleaning" @(Model.PetReminderType == PetReminderType.DentalCleaning ? "selected" : "")>@translator.Translate(userLanguage, "Dental Cleaning")</!option>
+                        <!option value="WeightCheck" @(Model.PetReminderType == PetReminderType.WeightCheck ? "selected" : "")>@translator.Translate(userLanguage, "Weight Check")</!option>
+                    </select>
                     <label for="reminderDescription">@translator.Translate(userLanguage,"Description")</label>
                     <input type="text" id="reminderDescription" class="form-control" placeholder="@translator.Translate(userLanguage,"Reminder Description")" value="@Model.Description">
                     <label>@translator.Translate(userLanguage,"Remind me on")</label>
@@ -67,6 +83,8 @@
                             <label class="form-check-label" for="reminderFixedIntervals">@translator.Translate(userLanguage, "Fixed Intervals")</label>
                         </div>
                     </div>
+                    @* TODO Phase 5 cleanup: Odometer-based recurrence is a legacy vehicle concept.
+                       Keep rendered (hidden when not applicable) for stability; remove after odometer is fully retired. *@
                     <label for="reminderRecurringMileage">@translator.Translate(userLanguage,"Odometer")</label>
                     <select class="form-select" onchange="checkCustomMileageInterval()" id="reminderRecurringMileage" @(Model.IsRecurring && (Model.Metric == ReminderMetric.Odometer || Model.Metric == ReminderMetric.Both) ? "" : "disabled")>
                         <!option value="Other" @(Model.ReminderMileageInterval == ReminderMileageInterval.Other ? "selected" : "")>@(Model.ReminderMileageInterval == ReminderMileageInterval.Other && Model.CustomMileageInterval > 0 ? $"{translator.Translate(userLanguage, "Other")}: {Model.CustomMileageInterval}" : $"{translator.Translate(userLanguage, "Other")}") </!option>
@@ -148,7 +166,10 @@
             id: @Model.Id, 
             createdFromRecord: @Model.CreatedFromRecord.ToString().ToLower(),
             mileageInterval: decodeHTMLEntities('@Model.ReminderMileageInterval.ToString()'), 
-            monthInterval: decodeHTMLEntities('@Model.ReminderMonthInterval.ToString()')
+            monthInterval: decodeHTMLEntities('@Model.ReminderMonthInterval.ToString()'),
+            petReminderType: decodeHTMLEntities('@Model.PetReminderType.ToString()'),
+            linkedRecordType: decodeHTMLEntities('@Model.LinkedRecordType.ToString()'),
+            linkedRecordId: @Model.LinkedRecordId
         }
     }
 </script>

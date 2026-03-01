@@ -19,5 +19,13 @@
         public ReminderMonthInterval ReminderMonthInterval { get; set; } = ReminderMonthInterval.OneYear;
         public ReminderMetric Metric { get; set; } = ReminderMetric.Date;
         public List<string> Tags { get; set; } = new List<string>();
+
+        // Phase 5 – Pet care reminder fields
+        /// <summary>Category of pet care this reminder covers.</summary>
+        public PetReminderType PetReminderType { get; set; } = PetReminderType.Custom;
+        /// <summary>Which type of source record created this reminder (None = manual).</summary>
+        public ReminderLinkedRecordType LinkedRecordType { get; set; } = ReminderLinkedRecordType.None;
+        /// <summary>Id of the source record that created this reminder (0 = manual / unlinked).</summary>
+        public int LinkedRecordId { get; set; } = 0;
     }
 }

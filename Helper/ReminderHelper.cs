@@ -95,10 +95,15 @@ namespace CarCareTracker.Helper
                     Metric = reminder.Metric,
                     UserMetric = reminder.Metric,
                     IsRecurring = reminder.IsRecurring,
-                    Tags = reminder.Tags
+                    Tags = reminder.Tags,
+                    // Phase 5 – pet care reminder fields
+                    PetReminderType = reminder.PetReminderType,
+                    LinkedRecordType = reminder.LinkedRecordType,
+                    LinkedRecordId = reminder.LinkedRecordId
                 };
                 if (reminder.Metric == ReminderMetric.Both)
                 {
+                    // TODO Phase 5 cleanup: ReminderMetric.Both uses mileage; retained for stability, remove when odometer concept is fully retired.
                     if (reminder.Date < dateCompare)
                     {
                         reminderViewModel.Urgency = ReminderUrgency.PastDue;
@@ -152,6 +157,7 @@ namespace CarCareTracker.Helper
                 }
                 else if (reminder.Metric == ReminderMetric.Odometer)
                 {
+                    // TODO Phase 5 cleanup: ReminderMetric.Odometer path retained for stability; remove when odometer concept is fully retired.
                     if (reminder.Mileage < currentMileage)
                     {
                         reminderViewModel.Urgency = ReminderUrgency.PastDue;
