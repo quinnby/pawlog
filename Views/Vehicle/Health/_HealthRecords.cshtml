@@ -74,6 +74,12 @@
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu record-dropdown">
+                    <li><a class="dropdown-item" href="#" onclick="showAddQuickHealthNoteModal()"><i class="bi bi-lightning me-2"></i>Quick Observation</a></li>
+                    @if (Model.Any(x => x.Category == HealthRecordCategory.WeightCheck && x.WeightValue > 0))
+                    {
+                        <li><a class="dropdown-item" href="#" onclick="showWeightTrendChart()"><i class="bi bi-graph-up me-2"></i>Weight Trend Chart</a></li>
+                    }
+                    <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#" onclick="printTab()">Print</a></li>
                     <li><a class="dropdown-item" href="#" onclick="searchTableRows('healthrecord-tab-pane')">Search</a></li>
                 </ul>
@@ -110,6 +116,29 @@
                         </td>
                         <td class="col-3 text-truncate">
                             @record.Title
+                            @if (record.Category == HealthRecordCategory.WeightCheck && record.WeightValue > 0)
+                            {
+                                <span class="badge bg-secondary ms-1">@($"{record.WeightValue} {(string.IsNullOrWhiteSpace(record.WeightUnit) ? "lbs" : record.WeightUnit)}")</span>
+                            }
+                            @if (record.Category == HealthRecordCategory.AllergyReaction)
+                            {
+                                @if (!string.IsNullOrWhiteSpace(record.Severity))
+                                {
+                                    string severityBadge = record.Severity switch
+                                    {
+                                        "Mild" => "bg-warning text-dark",
+                                        "Moderate" => "bg-orange text-dark",
+                                        "Severe" => "bg-danger",
+                                        "Life-threatening" => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                    <span class="badge @severityBadge ms-1">@record.Severity</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(record.Trigger))
+                                {
+                                    <small class="text-muted ms-1">(@record.Trigger)</small>
+                                }
+                            }
                             @if (!string.IsNullOrWhiteSpace(record.Notes))
                             {
                                 <i class="bi bi-chat-text ms-1 text-muted" title="Has notes"></i>
@@ -154,6 +183,22 @@
 <div class="modal fade" data-bs-focus="false" id="healthRecordModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="healthRecordModalContent">
+        </div>
+    </div>
+</div>
+
+<!-- Phase 7: Weight trend chart modal -->
+<div class="modal fade" data-bs-focus="false" id="weightTrendModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="weightTrendModalContent">
+        </div>
+    </div>
+</div>
+
+<!-- Phase 7: Quick health note modal -->
+<div class="modal fade" data-bs-focus="false" id="quickHealthNoteModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content" id="quickHealthNoteModalContent">
         </div>
     </div>
 </div>

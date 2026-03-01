@@ -72,6 +72,67 @@
                     </select>
 
                     @await Html.PartialAsync("_ExtraField", Model.ExtraFields)
+
+                    <!-- Phase 7: Weight tracking fields -->
+                    <div id="healthWeightFields" @(Model.Category == HealthRecordCategory.WeightCheck ? "" : "style=\"display:none;\"")>
+                        <label class="mt-2">Weight Measurement</label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" min="0" id="healthWeightValue" class="form-control"
+                                   placeholder="e.g. 12.5"
+                                   value="@(Model.WeightValue > 0 ? Model.WeightValue.ToString("G") : "")">
+                            <select id="healthWeightUnit" class="form-select" style="max-width:90px;">
+                                <!option value="lbs" @(Model.WeightUnit == "lbs" || string.IsNullOrWhiteSpace(Model.WeightUnit) ? "selected" : "")>lbs</!option>
+                                <!option value="kg"  @(Model.WeightUnit == "kg"  ? "selected" : "")>kg</!option>
+                                <!option value="oz"  @(Model.WeightUnit == "oz"  ? "selected" : "")>oz</!option>
+                                <!option value="g"   @(Model.WeightUnit == "g"   ? "selected" : "")>g</!option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Phase 7: Allergy fields -->
+                    <div id="healthAllergyFields" @(Model.Category == HealthRecordCategory.AllergyReaction ? "" : "style=\"display:none;\"")>
+                        <label for="healthAllergyType" class="mt-2">Allergy Type</label>
+                        <select id="healthAllergyType" class="form-select">
+                            <!option value="" @(string.IsNullOrWhiteSpace(Model.AllergyType) ? "selected" : "")>Unknown</!option>
+                            <!option value="Food"          @(Model.AllergyType == "Food"          ? "selected" : "")>Food</!option>
+                            <!option value="Medication"    @(Model.AllergyType == "Medication"    ? "selected" : "")>Medication</!option>
+                            <!option value="Environmental" @(Model.AllergyType == "Environmental" ? "selected" : "")>Environmental</!option>
+                            <!option value="Contact"       @(Model.AllergyType == "Contact"       ? "selected" : "")>Contact</!option>
+                        </select>
+
+                        <label for="healthTrigger" class="mt-2">Trigger / Allergen (optional)</label>
+                        <input type="text" id="healthTrigger" class="form-control"
+                               placeholder="e.g. Chicken, Penicillin, Pollen" value="@Model.Trigger">
+
+                        <label for="healthSeverity" class="mt-2">Severity</label>
+                        <select id="healthSeverity" class="form-select">
+                            <!option value=""                   @(string.IsNullOrWhiteSpace(Model.Severity)          ? "selected" : "")>Unknown</!option>
+                            <!option value="Mild"               @(Model.Severity == "Mild"               ? "selected" : "")>Mild</!option>
+                            <!option value="Moderate"           @(Model.Severity == "Moderate"           ? "selected" : "")>Moderate</!option>
+                            <!option value="Severe"             @(Model.Severity == "Severe"             ? "selected" : "")>Severe</!option>
+                            <!option value="Life-threatening"   @(Model.Severity == "Life-threatening"   ? "selected" : "")>Life-threatening</!option>
+                        </select>
+                    </div>
+
+                    <!-- Phase 7: Preventive care reminder -->
+                    <div id="healthPreventiveCareFields" @(Model.Category == HealthRecordCategory.PreventiveCare ? "" : "style=\"display:none;\"")>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="healthReminderEnabled"
+                                   @(Model.ReminderEnabled ? "checked" : "")
+                                   onchange="toggleHealthReminderDueDate(this)">
+                            <label class="form-check-label" for="healthReminderEnabled">
+                                Set a Reminder for Next Due Date
+                            </label>
+                        </div>
+                        <div id="healthReminderDueDateRow" @(Model.ReminderEnabled ? "" : "style=\"display:none;\"")>
+                            <label for="healthReminderDueDate" class="mt-2">Next Due Date</label>
+                            <div class="input-group">
+                                <input type="text" id="healthReminderDueDate" class="form-control"
+                                       placeholder="Date next treatment is due" value="@Model.ReminderDueDate">
+                                <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- RIGHT COLUMN -->
@@ -141,6 +202,27 @@
             $("#healthFollowUpDateRow").hide();
         }
     }
+    function toggleHealthReminderDueDate(checkbox) {
+        if (checkbox.checked) {
+            $("#healthReminderDueDateRow").show();
+            initDatePicker($('#healthReminderDueDate'));
+        } else {
+            $("#healthReminderDueDateRow").hide();
+        }
+    }
+    function onHealthCategoryChange(select) {
+        var cat = parseInt(select.value);
+        // WeightCheck = 7, AllergyReaction = 8, PreventiveCare = 11
+        $("#healthWeightFields").toggle(cat === 7);
+        $("#healthAllergyFields").toggle(cat === 8);
+        $("#healthPreventiveCareFields").toggle(cat === 11);
+        // initialize reminder due date picker if just shown and already checked
+        if (cat === 11 && $("#healthReminderEnabled").is(":checked")) {
+            initDatePicker($('#healthReminderDueDate'));
+        }
+    }
+    // wire category change on load
+    $("#healthRecordCategory").on("change", function() { onHealthCategoryChange(this); });
 </script>
 @if (!isNew && userConfig.EnableAutoFillOdometer == false)
 {

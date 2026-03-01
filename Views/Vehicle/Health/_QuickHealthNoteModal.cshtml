@@ -1,0 +1,57 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@model CarCareTracker.Models.HealthRecordInput
+@*
+  Phase 7 – Lightweight quick observation modal.
+  Simplified form for fast between-visit entries (symptoms, appetite/behavior notes, etc).
+  Saves via the same SaveHealthRecordToVehicleId endpoint as the full modal.
+*@
+<div class="modal-header">
+    <h5 class="modal-title"><i class="bi bi-lightning me-2"></i>Quick Observation</h5>
+    <button type="button" class="btn-close" onclick="hideQuickHealthNoteModal()" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form>
+        <label for="quickNoteDate">Date</label>
+        <div class="input-group">
+            <input type="text" id="quickNoteDate" class="form-control" value="@Model.Date" placeholder="Date">
+            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+        </div>
+
+        <label for="quickNoteCategory" class="mt-2">Type</label>
+        <select id="quickNoteCategory" class="form-select">
+            <option value="3"  selected>Illness / Symptom</option>
+            <option value="12">Behavioral Note</option>
+            <option value="13">Misc. Observation</option>
+            <option value="6" >Grooming</option>
+            <option value="7" >Weight Check</option>
+        </select>
+
+        <label for="quickNoteTitle" class="mt-2">Observation <span class="text-danger">*</span></label>
+        <input type="text" id="quickNoteTitle" class="form-control"
+               placeholder="e.g. Vomiting twice, reduced appetite, limping on right rear…">
+
+        <label for="quickNoteNotes" class="mt-2">Additional Notes (optional)</label>
+        <textarea id="quickNoteNotes" class="form-control" rows="3"
+                  placeholder="Any other details…"></textarea>
+
+        <label for="quickNoteStatus" class="mt-2">Status</label>
+        <select id="quickNoteStatus" class="form-select">
+            <option value="2" selected>Informational</option>
+            <option value="0">Open (needs follow-up)</option>
+            <option value="1">Completed</option>
+        </select>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" onclick="hideQuickHealthNoteModal()">Cancel</button>
+    <button type="button" class="btn btn-warning" onclick="saveQuickHealthNote()">
+        <i class="bi bi-lightning me-1"></i>Save Observation
+    </button>
+</div>
+<script>
+    initDatePicker($('#quickNoteDate'));
+    function getQuickNoteModelData() {
+        return { id: 0, vehicleId: @Model.VehicleId };
+    }
+</script>

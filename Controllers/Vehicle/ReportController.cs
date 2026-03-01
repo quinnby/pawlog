@@ -679,9 +679,95 @@ namespace CarCareTracker.Controllers
                 DataType = ImportMode.TaxRecord,
                 ExtraFields = x.ExtraFields
             }));
+            // Phase 7 – include HealthRecords in the per-pet timeline
+            var healthRecords = _healthRecordDataAccess.GetHealthRecordsByVehicleId(vehicleId);
+            if (reportParameter.FilterByDateRange && !string.IsNullOrWhiteSpace(reportParameter.StartDate) && !string.IsNullOrWhiteSpace(reportParameter.EndDate))
+            {
+                if (DateTime.TryParse(reportParameter.StartDate, out DateTime hrStart) &&
+                    DateTime.TryParse(reportParameter.EndDate, out DateTime hrEnd) && hrEnd >= hrStart)
+                {
+                    healthRecords.RemoveAll(x => x.Date.Date > hrEnd.Date || x.Date.Date < hrStart.Date);
+                }
+            }
+            reportData.AddRange(healthRecords.Select(x => new GenericReportModel
+            {
+                Date = x.Date,
+                Odometer = 0,
+                Description = string.IsNullOrWhiteSpace(x.Title) ? x.Description : x.Title,
+                Notes = x.Notes,
+                Cost = x.Cost,
+                DataType = ImportMode.HealthRecord,
+                ExtraFields = x.ExtraFields
+            }));
             vehicleHistory.VehicleHistory = reportData.OrderBy(x => x.Date).ThenBy(x => x.Odometer).ToList();
             return PartialView("Report/_VehicleHistory", vehicleHistory);
         }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        public IActionResult GetWeightTrendChartPartialView(int vehicleId)
+        {
+            return PartialView("Report/_WeightTrendChart");
+        }
+
+        [TypeFilter(typeof(CollaboratorFilter))]
+        [HttpGet]
+        public IActionResult GetPetSummaryData(int vehicleId)
+        {
+            var pet = _dataAccess.GetVehicleById(vehicleId);
+            var cutoffDate = DateTime.Now.AddYears(-1);
+            var reminderCutoff = DateTime.Now.AddDays(90);
+
+            var vaccinations = _vaccinationRecordDataAccess
+                .GetVaccinationRecordsByVehicleId(vehicleId)
+                .OrderByDescending(x => x.Date)
+                .ToList();
+
+            var activeMedications = _medicationRecordDataAccess
+                .GetMedicationRecordsByVehicleId(vehicleId)
+                .Where(x => x.IsActive)
+                .OrderByDescending(x => x.Date)
+                .ToList();
+
+            var allHealthRecords = _healthRecordDataAccess.GetHealthRecordsByVehicleId(vehicleId);
+
+            var knownAllergies = allHealthRecords
+                .Where(x => x.Category == HealthRecordCategory.AllergyReaction)
+                .OrderByDescending(x => x.Date)
+                .ToList();
+
+            var recentHealthRecords = allHealthRecords
+                .Where(x => x.Date >= cutoffDate && x.Category != HealthRecordCategory.AllergyReaction)
+                .OrderByDescending(x => x.Date)
+                .ToList();
+
+            var weightHistory = allHealthRecords
+                .Where(x => x.Category == HealthRecordCategory.WeightCheck && x.WeightValue > 0)
+                .OrderByDescending(x => x.Date)
+                .Take(10)
+                .ToList();
+
+            var upcomingReminders = _reminderRecordDataAccess
+                .GetReminderRecordsByVehicleId(vehicleId)
+                .Where(x => x.Date <= reminderCutoff && x.Date >= DateTime.Now.AddDays(-1))
+                .OrderBy(x => x.Date)
+                .ToList();
+
+            var viewModel = new PetSummaryViewModel
+            {
+                PetData = pet,
+                Vaccinations = vaccinations,
+                ActiveMedications = activeMedications,
+                KnownAllergies = knownAllergies,
+                RecentHealthRecords = recentHealthRecords,
+                WeightHistory = weightHistory,
+                UpcomingReminders = upcomingReminders,
+                GeneratedDate = DateTime.Now.ToShortDateString()
+            };
+
+            return PartialView("Report/_PetSummary", viewModel);
+        }
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpPost]
         public IActionResult GetMonthMPGByVehicle(int vehicleId, int year = 0)

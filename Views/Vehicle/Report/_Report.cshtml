@@ -106,6 +106,9 @@
                     <button onclick="generateVehicleHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Vehicle Maintenance Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                 </div>
                 <div class="d-grid">
+                    <button onclick="showPetSummaryModal()" class="btn btn-outline-success btn-md mt-1 mb-1"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</button>
+                </div>
+                <div class="d-grid">
                     <button onclick="exportAttachments()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Export Attachments")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                 </div>
                 @if (Model.HasVehicleImageMap)
@@ -156,6 +159,7 @@
             <button class="btn btn-outline-secondary btn-md mt-1 mb-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>
             <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#" onclick="generateVehicleHistoryReport()">@translator.Translate(userLanguage, "Vehicle Maintenance Report")</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="showPetSummaryModal()"><i class="bi bi-file-earmark-medical me-1"></i>Pet Health Summary</a></li>
                     <li><a class="dropdown-item" href="#" onclick="exportAttachments()">@translator.Translate(userLanguage, "Export Attachments")</a></li>
                     @if (Model.HasVehicleImageMap || Model.CustomWidgetsConfigured)
                     {
@@ -178,6 +182,13 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="vehicleDataTableModalContent">
             
+        </div>
+    </div>
+</div>
+<!-- Phase 7: Pet health summary modal -->
+<div class="modal fade" data-bs-focus="false" id="petSummaryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content" id="petSummaryModalContent">
         </div>
     </div>
 </div>

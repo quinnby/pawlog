@@ -143,6 +143,115 @@ function getAndValidateHealthRecordValues() {
         followUpDate:     healthFollowUpDate,
         tags:             healthTags,
         files:            uploadedFiles,
-        extraFields:      extraFields.extraFields
+        extraFields:      extraFields.extraFields,
+        // Phase 7 fields
+        weightValue:      globalParseFloat($("#healthWeightValue").val() || "0"),
+        weightUnit:       $("#healthWeightUnit").val() || "lbs",
+        allergyType:      $("#healthAllergyType").val() || "",
+        trigger:          $("#healthTrigger").val() || "",
+        severity:         $("#healthSeverity").val() || "",
+        reminderEnabled:  $("#healthReminderEnabled").is(":checked"),
+        reminderDueDate:  $("#healthReminderDueDate").val() || ""
     };
 }
+
+// ============================================================
+// Phase 7 – Weight Trend Chart
+// ============================================================
+function showWeightTrendChart() {
+    var vehicleId = GetVehicleId().vehicleId;
+    $.get('/Vehicle/GetWeightTrendChartPartialView?vehicleId=' + vehicleId, function (data) {
+        if (data) {
+            // prefer page-level weight modal if present (registered in Index.cshtml)
+            var $modal = $('#weightTrendModal');
+            if ($modal.length) {
+                $('#weightTrendModalContent').html(data);
+                $modal.modal('show');
+            } else {
+                // fallback: use the modal defined inside the health tab partial
+                $('#weightTrendModalContent').html(data);
+                $('#weightTrendModal').modal('show');
+            }
+        }
+    });
+}
+
+// ============================================================
+// Phase 7 – Quick Health Observation
+// ============================================================
+function showAddQuickHealthNoteModal() {
+    var vehicleId = GetVehicleId().vehicleId;
+    $.get('/Vehicle/GetAddQuickHealthNotePartialView?vehicleId=' + vehicleId, function (data) {
+        if (data) {
+            $('#quickHealthNoteModalContent').html(data);
+            $('#quickHealthNoteModal').modal('show');
+        }
+    });
+}
+
+function hideQuickHealthNoteModal() {
+    $('#quickHealthNoteModal').modal('hide');
+}
+
+function saveQuickHealthNote() {
+    var vehicleId = GetVehicleId().vehicleId;
+    var date      = $('#quickNoteDate').val();
+    var category  = parseInt($('#quickNoteCategory').val());
+    var title     = $('#quickNoteTitle').val().trim();
+    var notes     = $('#quickNoteNotes').val();
+    var status    = parseInt($('#quickNoteStatus').val());
+
+    if (!date || !title) {
+        errorToast('Please enter at least a date and observation text.');
+        return;
+    }
+
+    var payload = {
+        id: 0,
+        vehicleId: vehicleId,
+        date: date,
+        category: isNaN(category) ? 3 : category,
+        title: title,
+        description: '',
+        cost: '0',
+        notes: notes,
+        provider: '',
+        status: isNaN(status) ? 2 : status,
+        followUpRequired: false,
+        followUpDate: '',
+        tags: [],
+        files: [],
+        extraFields: [],
+        weightValue: 0,
+        weightUnit: 'lbs',
+        allergyType: '',
+        trigger: '',
+        severity: '',
+        reminderEnabled: false,
+        reminderDueDate: ''
+    };
+
+    $.post('/Vehicle/SaveHealthRecordToVehicleId', payload, function (data) {
+        if (data.success) {
+            successToast('Observation saved');
+            hideQuickHealthNoteModal();
+            getVehicleHealthRecords(vehicleId);
+        } else {
+            errorToast(data.message);
+        }
+    });
+}
+
+// ============================================================
+// Phase 7 – Pet Health Summary
+// ============================================================
+function showPetSummaryModal() {
+    var vehicleId = GetVehicleId().vehicleId;
+    $.get('/Vehicle/GetPetSummaryData?vehicleId=' + vehicleId, function (data) {
+        if (data) {
+            $('#petSummaryModalContent').html(data);
+            $('#petSummaryModal').modal('show');
+        }
+    });
+}
+

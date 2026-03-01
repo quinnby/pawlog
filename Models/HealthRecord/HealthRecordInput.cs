@@ -18,6 +18,19 @@ namespace CarCareTracker.Models
         public List<string> Tags { get; set; } = new List<string>();
         public List<ExtraField> ExtraFields { get; set; } = new List<ExtraField>();
 
+        // Phase 7 – Weight tracking
+        public decimal WeightValue { get; set; } = 0;
+        public string WeightUnit { get; set; } = string.Empty;
+
+        // Phase 7 – Allergy tracking
+        public string Severity { get; set; } = string.Empty;
+        public string AllergyType { get; set; } = string.Empty;
+        public string Trigger { get; set; } = string.Empty;
+
+        // Phase 7 – Preventive care reminder
+        public bool ReminderEnabled { get; set; } = false;
+        public string ReminderDueDate { get; set; } = string.Empty;
+
         public HealthRecord ToHealthRecord()
         {
             return new HealthRecord
@@ -36,7 +49,15 @@ namespace CarCareTracker.Models
                 Status = Status,
                 Files = Files,
                 Tags = Tags,
-                ExtraFields = ExtraFields
+                ExtraFields = ExtraFields,
+                // Phase 7 fields
+                WeightValue = WeightValue,
+                WeightUnit = WeightUnit,
+                Severity = Severity,
+                AllergyType = AllergyType,
+                Trigger = Trigger,
+                ReminderEnabled = ReminderEnabled,
+                ReminderDueDate = ReminderDueDate
             };
         }
     }

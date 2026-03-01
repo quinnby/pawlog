@@ -27,5 +27,26 @@ namespace CarCareTracker.Models
 
         /// <summary>Completion / informational status of this record.</summary>
         public HealthRecordStatus Status { get; set; } = HealthRecordStatus.Completed;
+
+        // Phase 7 – Weight tracking (used when Category == WeightCheck)
+        /// <summary>Numeric weight measurement (0 = not set).</summary>
+        public decimal WeightValue { get; set; } = 0;
+        /// <summary>Unit for the weight value (e.g. "lbs", "kg").</summary>
+        public string WeightUnit { get; set; } = string.Empty;
+
+        // Phase 7 – Allergy tracking (used when Category == AllergyReaction)
+        /// <summary>Severity of the allergic reaction (Mild / Moderate / Severe / Life-threatening).</summary>
+        public string Severity { get; set; } = string.Empty;
+        /// <summary>Category of allergy (Food / Medication / Environmental / Contact / Unknown).</summary>
+        public string AllergyType { get; set; } = string.Empty;
+        /// <summary>Specific allergen or trigger (e.g. "Chicken", "Penicillin", "Pollen").</summary>
+        public string Trigger { get; set; } = string.Empty;
+
+        // Phase 7 – Preventive care reminder (used when Category == PreventiveCare)
+        /// <summary>Whether a date-based reminder should be created / synced for this record.</summary>
+        public bool ReminderEnabled { get; set; } = false;
+        /// <summary>Date when next preventive care is due (optional).</summary>
+        [JsonConverter(typeof(FromDateOptional))]
+        public string ReminderDueDate { get; set; } = string.Empty;
     }
 }

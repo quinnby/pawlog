@@ -1,0 +1,235 @@
+@using CarCareTracker.Helper
+@inject IConfigHelper config
+@model CarCareTracker.Models.PetSummaryViewModel
+@*
+  Phase 7 – Printable / exportable pet summary.
+  Contains the most clinically relevant info for vet handoff, boarding, travel, or emergency.
+  Reuses existing record types; no new database collections.
+*@
+@{
+    var pet = Model.PetData;
+    // compute age string
+    string ageStr = "";
+    if (!string.IsNullOrWhiteSpace(pet.DateOfBirth))
+    {
+        if (DateTime.TryParse(pet.DateOfBirth, out DateTime dob))
+        {
+            var today = DateTime.Today;
+            int years = today.Year - dob.Year;
+            int months = today.Month - dob.Month;
+            if (months < 0) { years--; months += 12; }
+            if (today.Day < dob.Day) months--;
+            ageStr = years > 0 ? $"{years} yr{(years != 1 ? "s" : "")} {months} mo" : $"{months} mo";
+            if (pet.IsEstimatedAge) ageStr += " (est.)";
+        }
+    }
+}
+<div class="modal-header d-print-none">
+    <h5 class="modal-title"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</h5>
+    <div class="ms-auto d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print
+        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+</div>
+<div class="modal-body">
+
+    <!-- ===== Pet Profile ===== -->
+    <div class="row mb-3">
+        <div class="col-3 d-none d-md-block">
+            <img src="@pet.ImageLocation" class="img-fluid rounded" style="max-height:120px; object-fit:cover;"
+                 onerror="this.style.display='none'" />
+        </div>
+        <div class="col">
+            <h4 class="mb-0">
+                @(!string.IsNullOrWhiteSpace(pet.PetName) ? pet.PetName : $"{pet.Year} {pet.Make} {pet.Model}")
+                @if (pet.PetStatus != CarCareTracker.Models.PetStatus.Active)
+                {
+                    <span class="badge bg-secondary ms-2">@pet.PetStatus</span>
+                }
+            </h4>
+            <p class="text-muted mb-1">
+                @pet.Species@(!string.IsNullOrWhiteSpace(pet.Breed) ? $" · {pet.Breed}" : "")
+                @if (!string.IsNullOrWhiteSpace(pet.Color)) { <span> · @pet.Color</span> }
+            </p>
+            <ul class="list-unstyled mb-0 small">
+                @if (!string.IsNullOrWhiteSpace(pet.PetSex)) { <li><strong>Sex:</strong> @pet.PetSex @(pet.IsSpayedNeutered ? "(Spayed/Neutered)" : "")</li> }
+                @if (!string.IsNullOrWhiteSpace(ageStr)) { <li><strong>Age:</strong> @ageStr</li> }
+                @if (!string.IsNullOrWhiteSpace(pet.DateOfBirth)) { <li><strong>DOB:</strong> @pet.DateOfBirth</li> }
+                @if (!string.IsNullOrWhiteSpace(pet.CurrentWeight)) { <li><strong>Current Weight:</strong> @pet.CurrentWeight</li> }
+                @if (Model.WeightHistory.Any()) { <li><strong>Last Recorded Weight:</strong> @($"{Model.WeightHistory.First().WeightValue} {(string.IsNullOrWhiteSpace(Model.WeightHistory.First().WeightUnit) ? "lbs" : Model.WeightHistory.First().WeightUnit)} on {Model.WeightHistory.First().Date.ToShortDateString()}")</li> }
+                @if (!string.IsNullOrWhiteSpace(pet.MicrochipNumber)) { <li><strong>Microchip:</strong> @pet.MicrochipNumber</li> }
+                @if (!string.IsNullOrWhiteSpace(pet.LicenseNumber)) { <li><strong>License/Tag:</strong> @pet.LicenseNumber</li> }
+                @if (!string.IsNullOrWhiteSpace(pet.PrimaryVet)) { <li><strong>Primary Vet:</strong> @pet.PrimaryVet</li> }
+                @if (!string.IsNullOrWhiteSpace(pet.EmergencyContact)) { <li><strong>Emergency Contact:</strong> @pet.EmergencyContact</li> }
+            </ul>
+        </div>
+        <div class="col-12 mt-2">
+            <small class="text-muted">Generated: @Model.GeneratedDate</small>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- ===== Known Allergies ===== -->
+    @if (Model.KnownAllergies.Any())
+    {
+        <div class="mb-3">
+            <h6 class="text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Known Allergies / Reactions</h6>
+            <table class="table table-sm table-bordered">
+                <thead class="table-danger">
+                    <tr>
+                        <th>Allergen / Trigger</th>
+                        <th>Type</th>
+                        <th>Severity</th>
+                        <th>Notes</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var a in Model.KnownAllergies)
+                    {
+                        <tr>
+                            <td>@(!string.IsNullOrWhiteSpace(a.Trigger) ? a.Trigger : a.Title)</td>
+                            <td>@(string.IsNullOrWhiteSpace(a.AllergyType) ? "Unknown" : a.AllergyType)</td>
+                            <td>@(string.IsNullOrWhiteSpace(a.Severity) ? "—" : a.Severity)</td>
+                            <td>@a.Notes</td>
+                            <td>@a.Date.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <hr />
+    }
+
+    <!-- ===== Vaccinations ===== -->
+    @if (Model.Vaccinations.Any())
+    {
+        <div class="mb-3">
+            <h6><i class="bi bi-shield-plus me-1 text-primary"></i>Vaccination History</h6>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Vaccine</th>
+                        <th>Date</th>
+                        <th>Next Due</th>
+                        <th>Clinic</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in Model.Vaccinations)
+                    {
+                        <tr>
+                            <td>@v.VaccineName</td>
+                            <td>@v.Date.ToShortDateString()</td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(v.NextDueDate))
+                                {
+                                    bool overdue = DateTime.TryParse(v.NextDueDate, out DateTime nd) && nd < DateTime.Today;
+                                    <span class="@(overdue ? "text-danger fw-bold" : "")">@v.NextDueDate</span>
+                                }
+                                else { <span>—</span> }
+                            </td>
+                            <td>@(string.IsNullOrWhiteSpace(v.Clinic) ? v.AdministeredBy : v.Clinic)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <hr />
+    }
+
+    <!-- ===== Active Medications ===== -->
+    @if (Model.ActiveMedications.Any())
+    {
+        <div class="mb-3">
+            <h6><i class="bi bi-capsule me-1 text-secondary"></i>Current Medications</h6>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Medication</th>
+                        <th>Dose / Frequency</th>
+                        <th>Route</th>
+                        <th>Purpose</th>
+                        <th>Started</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model.ActiveMedications)
+                    {
+                        <tr>
+                            <td><strong>@m.MedicationName</strong></td>
+                            <td>@m.Dosage @m.Unit — @m.Frequency</td>
+                            <td>@m.Route</td>
+                            <td>@m.Purpose</td>
+                            <td>@m.Date.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <hr />
+    }
+
+    <!-- ===== Upcoming Reminders ===== -->
+    @if (Model.UpcomingReminders.Any())
+    {
+        <div class="mb-3">
+            <h6><i class="bi bi-bell me-1 text-warning"></i>Upcoming Care (next 90 days)</h6>
+            <ul class="list-group list-group-flush">
+                @foreach (var r in Model.UpcomingReminders)
+                {
+                    bool urgent = r.Date <= DateTime.Today.AddDays(7);
+                    <li class="list-group-item py-1 @(urgent ? "list-group-item-warning" : "")">
+                        <i class="bi bi-calendar-event me-2"></i>
+                        <strong>@r.Date.ToShortDateString()</strong> — @r.Description
+                    </li>
+                }
+            </ul>
+        </div>
+        <hr />
+    }
+
+    <!-- ===== Recent Health History (last 12 months) ===== -->
+    @if (Model.RecentHealthRecords.Any())
+    {
+        <div class="mb-3">
+            <h6><i class="bi bi-heart-pulse me-1 text-danger"></i>Recent Health History (Last 12 Months)</h6>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Entry</th>
+                        <th>Provider</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var h in Model.RecentHealthRecords)
+                    {
+                        <tr>
+                            <td>@h.Date.ToShortDateString()</td>
+                            <td><span class="badge bg-secondary">@h.Category.ToString()</span></td>
+                            <td>@h.Title</td>
+                            <td>@h.Provider</td>
+                            <td>@StaticHelper.TruncateStrings(h.Notes, 80)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (!Model.Vaccinations.Any() && !Model.ActiveMedications.Any() && !Model.KnownAllergies.Any()
+         && !Model.UpcomingReminders.Any() && !Model.RecentHealthRecords.Any())
+    {
+        <div class="text-center text-muted py-4">
+            <i class="bi bi-heart-pulse display-4"></i>
+            <p class="mt-2">No health records found for this pet yet.</p>
+        </div>
+    }
+
+</div>
