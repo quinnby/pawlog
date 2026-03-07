@@ -1,245 +1,398 @@
 # PawLogger
 
-PawLogger is a self-hosted, open-source pet health and care tracking application.
+> A self-hosted, open-source pet health and care tracking application.
 
-It is a fork/refactor of Lubelogger that now centers user-facing workflows around pets and care history rather than vehicles, while retaining some legacy internals for compatibility during phased migration.
+**PawLogger** is a pet-health-focused adaptation of **[LubeLogger](https://github.com/hargata/lubelog)**.  
+It builds on the upstream project’s foundation and redirects the user-facing experience toward **pet profiles, health history, medications, vaccinations, vet visits, reminders, expenses, and exportable summaries**.
 
-## Project Overview
+> **Attribution:** PawLogger is based on LubeLogger, and that upstream work should remain clearly credited and respected. This project is an adaptation/refactor of that codebase, not a greenfield rewrite.
 
-PawLogger is designed to keep each pet’s health and care history in one place, including:
+---
 
-* Pet profiles and lifecycle status
-* A HealthRecord-based timeline/history
-* Structured pet-health records for vaccinations, medications, vet visits, and licensing
-* Centralized reminders and pet expenses
-* Weight tracking, allergy tracking, and quick health notes
-* Printable pet health summaries and reports
+## Overview
 
-## Feature Summary
+PawLogger is designed to keep a pet’s health and care history in one place.
 
-Only currently implemented features are listed below.
+It supports tracking and managing:
+
+- pet profiles and lifecycle status
+- health timeline/history
+- vaccinations, medications, vet visits, and licensing
+- reminders and follow-ups
+- pet-related expenses
+- weight history and trends
+- allergy and quick health notes
+- attachments and exportable summaries
+
+The app now presents as a **pet-health-first** experience, while some upstream-era internal naming and compatibility paths may still remain during migration.
+
+---
+
+## Features
 
 ### Pet Profiles
+Track one or more pets and store profile details such as:
 
-* Track one or more pets per account
-* Store profile details such as name, species, breed, date of birth / estimated age, sex, color, microchip, spayed/neutered status, vet/contact fields, and profile image
-* Pet statuses include Active, Archived, Rehomed, and Deceased
+- name
+- species
+- breed
+- sex
+- date of birth / estimated age
+- color / markings
+- microchip
+- spayed / neutered status
+- photo
+- notes
 
-### HealthRecord Timeline / History Backbone
+Supported pet lifecycle statuses:
 
-* HealthRecord is the central timeline model for pet care history
-* Supports categorized health events, including Weight Check and Allergy / Reaction
-* Timeline entries support notes, tags, costs, and attachments where applicable
+- **Active**
+- **Archived**
+- **Rehomed**
+- **Deceased**
 
-### Specialized Pet-Health Records
+---
 
-* Vaccinations
-* Medications
-* Vet Visits
-* Licensing
+### Health Timeline
+PawLogger uses a centralized **HealthRecord** timeline/history model for pet care tracking.
 
-These specialized flows support richer structured fields and can project/link into HealthRecord timeline entries.
+Supported categories include:
+
+- Vet Visit
+- Vaccination
+- Medication
+- Weight Check
+- Allergy / Reaction
+- Preventive Care
+- Behavioral Note
+- Miscellaneous Care
+
+Health records can include notes, tags, dates, costs, and attachments where applicable.
+
+---
+
+### Specialized Health Records
+Structured record flows exist for:
+
+- **Vaccinations**
+- **Medications**
+- **Vet Visits**
+- **Licensing**
+
+These can link/project into the main health timeline so the pet record remains useful as a single longitudinal history.
+
+---
 
 ### Reminders
+- centralized reminder flow
+- pet-care-oriented reminder handling
+- follow-up and due-date support where applicable
 
-* Centralized, pet-care-oriented reminder flow
-* Reminders can be manual or created from linked/specialized record workflows when enabled
+---
 
-### Pet Expense Tracking
+### Pet Expenses
+Track pet-related expenses such as:
 
-* Centralized pet expense tracking
-* Supports categories such as vet, medication, vaccination, grooming, food, supplies, licensing, insurance, boarding/daycare, training, preventive care, and other
+- vet care
+- medications
+- vaccinations
+- grooming
+- food
+- supplies
+- licensing
+- insurance
+- boarding / daycare
+- training
+- preventive care
+- other costs
 
-### Weight Tracking and Trends
+---
 
-* Weight tracking via Weight Check HealthRecord entries
-* Weight trend/history chart is available
-* Weight entries can include explicit units
+### Weight Tracking
+- structured **Weight Check** entries
+- weight history support
+- weight trend support
+- user-configurable preferred weight unit
+
+---
 
 ### Allergy Tracking
+Track allergy and reaction history through structured health records.
 
-* Allergy events are tracked through HealthRecord entries
+---
 
 ### Quick Health Notes
+Fast-entry health and care notes for day-to-day observations.
 
-* Quick health notes are available for fast care observations
+---
 
-### Pet Health Summary
+### Pet Health Summary / PDF Export
+- consolidated pet summary view
+- exportable PDF summary
+- intended for sharing, saving, or printing as a cleaner pet record summary
 
-* Pet Health Summary view is available
-* Includes printable summary/report workflow
+---
 
 ### Multi-Pet Support
+Track multiple pets in the same app instance.
 
-* Per-pet profiles, records, reminders, and expenses
+---
 
 ### Attachments
+Store file/document attachments in relevant record flows.
 
-* File/document attachments are available in relevant record workflows
+---
 
-### Legacy Compatibility
+### Compatibility Support
+- user-facing pet routes prefer `/animals`
+- legacy `/Vehicle` routes may still remain functional for compatibility
+- some upstream-era internal identifiers may still remain in code and storage
 
-* Some Lubelogger-era internals and some legacy tabs/sections may still remain for compatibility
-* User-facing navigation now prefers the `/animals` route prefix
+---
 
 ## Main Workflows
 
-1. **My Pets**
+### 1. My Pets
+View and manage pets, including active and inactive statuses.
 
-   * Manage active pets and visibility of archived/inactive pets
+### 2. Pet Profile
+Edit pet details, status, weight, and general information.
 
-2. **Pet Profile**
+### 3. Health Records
+Use the health timeline as the main source of care history.
 
-   * Edit identity and status fields, including Archived, Rehomed, and Deceased states
+### 4. Specialized Records
+Create and manage:
 
-3. **Health Records**
+- vaccinations
+- medications
+- vet visits
+- licensing
 
-   * Use the timeline as the primary longitudinal care history
+### 5. Reminders
+Track upcoming care, follow-ups, and recurring needs.
 
-4. **Specialized Health Records**
+### 6. Expenses
+Track pet-related costs and review totals/history.
 
-   * Create and update vaccination, medication, vet visit, and licensing records
-   * Link/project specialized entries into HealthRecord history
+### 7. Pet Health Summary
+Generate a readable summary of a pet’s record and export it as a PDF.
 
-5. **Reminders**
-
-   * Track upcoming and past-due care reminders and linked follow-ups
-
-6. **Expenses**
-
-   * Track pet-care costs through the centralized pet expense flow
-
-7. **Pet Health Summary / Print**
-
-   * Review or print a consolidated pet health summary/report
+---
 
 ## Tech Stack
 
-| Layer              | Technology                    |
-| ------------------ | ----------------------------- |
-| Runtime            | .NET 10 (ASP.NET Core MVC)    |
-| Default database   | LiteDB (embedded, file-based) |
-| Optional database  | PostgreSQL (via Npgsql)       |
-| UI framework       | Bootstrap                     |
-| Charts             | Chart.js                      |
-| Date picker        | Bootstrap-DatePicker          |
-| Alerts / modals    | SweetAlert2                   |
-| CSV processing     | CsvHelper                     |
-| Markdown rendering | Drawdown                      |
-| Email              | MailKit                       |
-| Layout utilities   | Masonry                       |
-| QR support         | QRCode-Generator              |
+| Layer | Technology |
+|---|---|
+| Runtime | .NET 10 / ASP.NET Core MVC |
+| Default database | LiteDB |
+| Optional database | PostgreSQL |
+| UI framework | Bootstrap |
+| Charts | Chart.js |
+| Date picker | Bootstrap Datepicker |
+| Alerts / modals | SweetAlert2 |
+| CSV processing | CsvHelper |
+| Markdown rendering | Drawdown |
+| Email | MailKit |
 
-## Setup and Installation
+---
+
+## Getting Started
 
 ### Prerequisites
 
-* [Docker](https://docs.docker.com/get-docker/) for containerized deployment, or
-* [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) for local development
+You can run PawLogger using either Docker or the .NET SDK.
 
-### Option 1 — Docker (LiteDB, default)
+- [Docker](https://www.docker.com/)
+- or [.NET 10 SDK](https://dotnet.microsoft.com/)
+
+---
+
+## Running with Docker
+
+### Default (LiteDB)
 
 ```bash
 docker compose up -d
 ```
 
-* Uses [`docker-compose.yml`](docker-compose.yml)
-* App binds to port **8080**
-* Persists app data and ASP.NET data-protection keys via Docker volumes (`data`, `keys`)
+This uses the default `docker-compose.yml` and runs the app with LiteDB.
 
-### Option 2 — Docker with PostgreSQL
+### PostgreSQL
 
 ```bash
 docker compose -f docker-compose.postgresql.yml up -d
 ```
 
-* Uses [`docker-compose.postgresql.yml`](docker-compose.postgresql.yml)
-* Starts both PostgreSQL and app containers
-* Configure the database connection with `POSTGRES_CONNECTION`, for example:
+This uses PostgreSQL instead of LiteDB.
 
-```text
-Host=<host>:5432;Username=<user>;Password=<password>;Database=<dbname>;
-```
+### Other compose variants
 
-### Option 3 — Local Development (.NET CLI)
+The repository may also include additional compose variants such as:
+
+- `docker-compose.dev.yml`
+- `docker-compose.traefik.yml`
+
+Use the one that matches your environment and deployment style.
+
+---
+
+## Running Locally
+
+Restore packages and run the application:
 
 ```bash
 dotnet restore
 dotnet run
 ```
 
-Default local URLs are typically `https://localhost:5001` and `http://localhost:5000` unless overridden by local configuration.
+Build explicitly:
 
-### Additional Compose Variants
+```bash
+dotnet build -c Release
+```
 
-* [`docker-compose.dev.yml`](docker-compose.dev.yml): local development profile with Postgres health checks and local image build
-* [`docker-compose.traefik.yml`](docker-compose.traefik.yml): example Traefik integration profile
+Clean build:
+
+```bash
+dotnet clean
+dotnet restore
+dotnet build -c Release
+```
+
+---
 
 ## Configuration
 
-Configuration is managed through [`appsettings.json`](appsettings.json), optional user/server config files loaded at startup, and environment variables.
+Configuration is handled through:
 
-Key settings include:
+- `appsettings.json`
+- environment variables
+- persisted user/server settings
 
-| Key                       | Default   | Description                                   |
-| ------------------------- | --------- | --------------------------------------------- |
-| `EnableAuth`              | `false`   | Enable login/password authentication          |
-| `DisableRegistration`     | `false`   | Disable new user self-registration            |
-| `EnableRootUserOIDC`      | `false`   | Enable OIDC/SSO for root user                 |
-| `EnableCsvImports`        | `true`    | Enable CSV import flows for supported records |
-| `ShowCalendar`            | `true`    | Show calendar UI                              |
-| `UserLanguage`            | `en_US`   | Default UI language                           |
-| `UseMarkDownOnSavedNotes` | `false`   | Render markdown in notes                      |
-| `DefaultReminderEmail`    | `""`      | Default email for reminders                   |
-| `POSTGRES_CONNECTION`     | *(unset)* | Switch persistence from LiteDB to PostgreSQL  |
+If PostgreSQL is enabled, configure the appropriate connection string for your deployment.
 
-If `POSTGRES_CONNECTION` is not set, the app uses LiteDB by default.
+If your current deployment uses a `POSTGRES_CONNECTION` environment variable, continue using that convention unless your local configuration differs.
+
+---
+
+## Routing
+
+PawLogger now prefers pet-friendly user-facing routing such as:
+
+- `/animals/...`
+
+Legacy upstream-style routes may still remain available for compatibility, including older `/Vehicle/...` paths.
+
+---
 
 ## Compatibility Notes
 
-* User-facing pet workflows now prefer `/animals` routes.
-* Legacy `/Vehicle` routes still work for backward compatibility.
-* Some Lubelogger-era internal identifiers remain in code and schema, including `Vehicle` / `VehicleId`.
-* Some legacy tabs/features may still remain available for compatibility and may be marked as **Legacy** in the UI.
-* The project/assembly naming (`CarCareTracker`) still exists internally and does not affect normal end-user use.
+PawLogger is a pet-health-focused adaptation of LubeLogger, but some compatibility layers remain.
 
-## Known Limitations / Current Caveats
+Examples include:
 
-* Legacy naming and compatibility layers are still present internally while migration continues.
-* Some legacy vehicle-era sections may still be visible in certain configurations.
-* Reminder behavior for linked projected-record workflows can depend on per-record reminder flags and existing data state.
-* `Current Weight` and structured Weight Check history can be edited through different flows; use Weight Check entries as the authoritative trend/history source.
+- some internal names from the original project may still remain in code or storage
+- some legacy tabs or compatibility paths may still exist in the UI or backend
+- the internal project/assembly naming may still reflect the upstream codebase in some places
+- some older report or compatibility paths may still exist even if the primary pet-facing workflow now uses PawLogger terminology
 
-## Optional Roadmap
+These compatibility layers exist to reduce migration risk while the application continues to move away from vehicle-era internals.
 
-Potential future improvements include:
+---
 
-* Further reducing legacy internal naming and compatibility layers
-* Further simplifying or hiding remaining legacy tabs as migration continues
-* Additional pet-health-first UX/reporting polish
+## Known Limitations
+
+- some legacy LubeLogger-era internal naming may still remain
+- some compatibility/legacy tabs may still exist
+- certain old vehicle-era functionality may still be present under compatibility paths
+- the app is pet-focused in user-facing workflows, but not every internal identifier has necessarily been fully renamed
+- some legacy report/export paths may still exist alongside newer pet-summary flows
+
+---
+
+## Development Notes
+
+When making future changes, the safest approach is:
+
+1. preserve user-facing pet terminology
+2. keep upstream attribution intact
+3. avoid reckless renaming of compatibility-critical fields and routes
+4. prefer additive migration over destructive rewrites
+
+Examples of compatibility-critical items that may still exist internally include upstream-era naming like `Vehicle` / `VehicleId`.
+
+---
+
+## Upstream Attribution
+
+PawLogger is based on the work done in **[LubeLogger](https://github.com/hargata/lubelog)** by **hargata**.
+
+This repository should continue to acknowledge that upstream foundation clearly and respectfully.
+
+PawLogger does **not** claim to be built from scratch. It is an adaptation/refactor of the upstream project for a different domain: pet health and care tracking.
+
+---
 
 ## License
 
-MIT (see [LICENSE](LICENSE)).
+This repository is licensed under the **MIT License**.
 
-## Credits and Attribution
+See [LICENSE](LICENSE) for details.
 
-PawLogger is a fork of [LubeLogger](https://github.com/hargata/lubelog) by hargata.
+Because PawLogger is based on LubeLogger, upstream attribution and license obligations should remain preserved.
 
-* Upstream project: self-hosted vehicle maintenance and fuel mileage tracker
-* This repository: pet health and care tracking adaptation built on that codebase
-* Licensing: both projects are MIT licensed
+---
+
+## Credits
+
+### Upstream Project
+- [LubeLogger](https://github.com/hargata/lubelog)
 
 ### Core Dependencies
+- [Bootstrap](https://github.com/twbs/bootstrap)
+- [LiteDB](https://github.com/litedb-org/LiteDB)
+- [Npgsql](https://github.com/npgsql/npgsql)
+- [Bootstrap Datepicker](https://github.com/uxsolutions/bootstrap-datepicker)
+- [SweetAlert2](https://github.com/sweetalert2/sweetalert2)
+- [CsvHelper](https://github.com/JoshClose/CsvHelper)
+- [Chart.js](https://github.com/chartjs/Chart.js)
+- [Drawdown](https://github.com/adamvleggett/drawdown)
+- [MailKit](https://github.com/jstedfast/MailKit)
 
-* [Bootstrap](https://github.com/twbs/bootstrap)
-* [LiteDB](https://github.com/mbdavid/litedb)
-* [Npgsql](https://github.com/npgsql/npgsql)
-* [Bootstrap-DatePicker](https://github.com/uxsolutions/bootstrap-datepicker)
-* [SweetAlert2](https://github.com/sweetalert2/sweetalert2)
-* [CsvHelper](https://github.com/JoshClose/CsvHelper)
-* [Chart.js](https://github.com/chartjs/Chart.js)
-* [Drawdown](https://github.com/adamvleggett/drawdown)
-* [MailKit](https://github.com/jstedfast/MailKit)
-* [Masonry](https://github.com/desandro/masonry)
-* [QRCode-Generator](https://github.com/kazuhikoarase/qrcode-generator)
+---
+
+## Roadmap
+
+Potential future improvements may include:
+
+- further reduction of legacy internal naming
+- additional cleanup of compatibility-era tabs and report paths
+- continued UX polish for pet-health-first workflows
+- improved export/report options
+- additional documentation and deployment guidance
+
+This section reflects possible future work only. It does not imply those items are complete.
+
+---
+
+## Summary
+
+PawLogger is a pet-health-focused adaptation of LubeLogger that now supports:
+
+- pet profiles
+- health timeline/history
+- vaccinations
+- medications
+- vet visits
+- licensing
+- reminders
+- pet expenses
+- weight tracking
+- allergy tracking
+- quick health notes
+- Pet Health Summary / PDF export
+- multi-pet support
+- attachments
+
+It is intended to feel like a pet care application in normal user-facing workflows while continuing to respect and preserve the upstream foundation it was built from.
