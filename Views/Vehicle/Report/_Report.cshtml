@@ -103,7 +103,7 @@
                     <button onclick="showGlobalSearch()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Search")<i class="bi ms-2 bi-search"></i></button>
                 </div>
                 <div class="d-grid">
-                    <button onclick="generateVehicleHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Care History Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
+                    <button onclick="generateCareHistoryReport()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Care History Report")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                 </div>
                 <div class="d-grid">
                     <button onclick="showPetSummaryModal()" class="btn btn-outline-success btn-md mt-1 mb-1"><i class="bi bi-file-earmark-medical me-2"></i>Pet Health Summary</button>
@@ -114,7 +114,7 @@
                 @if (Model.HasVehicleImageMap)
                 {
                     <div class="d-grid">
-                        <button onclick="loadVehicleImageMap()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Body Map")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
+                        <button onclick="loadPetBodyMap()" class="btn btn-secondary btn-md mt-1 mb-1">@translator.Translate(userLanguage, "Body Map")<i class="bi ms-2 bi-box-arrow-in-up-right"></i></button>
                     </div>
                 }
                 @if (Model.CustomWidgetsConfigured)
@@ -163,7 +163,7 @@
         <div>
             <button class="btn btn-outline-secondary btn-md mt-1 mb-1" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>
             <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="generateVehicleHistoryReport()">@translator.Translate(userLanguage, "Care History Report")</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="generateCareHistoryReport()">@translator.Translate(userLanguage, "Care History Report")</a></li>
                     <li><a class="dropdown-item" href="#" onclick="showPetSummaryModal()"><i class="bi bi-file-earmark-medical me-1"></i>Pet Health Summary</a></li>
                     <li><a class="dropdown-item" href="#" onclick="exportAttachments()">@translator.Translate(userLanguage, "Export Attachments")</a></li>
                     @if (Model.HasVehicleImageMap || Model.CustomWidgetsConfigured)
@@ -172,7 +172,7 @@
                     }
                     @if (Model.HasVehicleImageMap)
                     {
-                        <li><a class="dropdown-item" href="#" onclick="loadVehicleImageMap()">@translator.Translate(userLanguage, "Body Map")</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadPetBodyMap()">@translator.Translate(userLanguage, "Body Map")</a></li>
                     }
                     @if (Model.CustomWidgetsConfigured)
                     {

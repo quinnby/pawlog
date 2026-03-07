@@ -131,8 +131,12 @@ namespace CarCareTracker.Controllers
         }
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
-        public IActionResult Index(int vehicleId)
+        public IActionResult Index(int vehicleId = 0, int? animalId = null)
         {
+            if (animalId.HasValue && animalId.Value != default)
+            {
+                vehicleId = animalId.Value;
+            }
             var data = _dataAccess.GetVehicleById(vehicleId);
             return View(data);
         }

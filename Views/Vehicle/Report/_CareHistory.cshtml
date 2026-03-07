@@ -1,7 +1,7 @@
 ﻿@using CarCareTracker.Helper
 @inject IConfigHelper config
 @inject ITranslationHelper translator
-@model VehicleHistoryViewModel
+@model CareHistoryViewModel
 @{
     var userConfig = config.GetUserConfig(User);
     var hideZero = userConfig.HideZero;
@@ -154,7 +154,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (GenericReportModel reportData in Model.VehicleHistory)
+                    @foreach (GenericReportModel reportData in Model.CareHistory)
                     {
                         <tr class="d-flex">
                             <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.DataType)) ? "" : "d-none")">
@@ -209,7 +209,7 @@
     </div>
 </div>
 @if (Model.ReportParameters.PrintIndividualRecords){
-    @foreach (GenericReportModel genericRecord in Model.VehicleHistory)
+    @foreach (GenericReportModel genericRecord in Model.CareHistory)
     {
         <div class="d-flex flex-column recordSticker">
             <div class="d-flex">

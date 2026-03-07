@@ -334,7 +334,7 @@ namespace CarCareTracker.Controllers
                     imageMap = JsonSerializer.Deserialize<VehicleImageMap>(fullFileText) ?? new VehicleImageMap();
                 }
             }
-            return PartialView("Report/_VehicleImageMap", imageMap);
+            return PartialView("Report/_PetBodyMap", imageMap);
         }
         [TypeFilter(typeof(CollaboratorFilter))]
         public IActionResult GetReminderMakeUpByVehicle(int vehicleId, int daysToAdd)
@@ -518,12 +518,12 @@ namespace CarCareTracker.Controllers
         [TypeFilter(typeof(CollaboratorFilter))]
         public IActionResult GetVehicleHistory(int vehicleId, ReportParameter reportParameter)
         {
-            var vehicleHistory = new VehicleHistoryViewModel();
-            vehicleHistory.ReportParameters = reportParameter;
-            vehicleHistory.VehicleData = _dataAccess.GetVehicleById(vehicleId);
+            var careHistory = new CareHistoryViewModel();
+            careHistory.ReportParameters = reportParameter;
+            careHistory.VehicleData = _dataAccess.GetVehicleById(vehicleId);
             var vehicleRecords = _vehicleLogic.GetVehicleRecords(vehicleId);
             bool useMPG = _config.GetUserConfig(User).UseMPG;
-            bool useUKMPG = !vehicleHistory.VehicleData.IsElectric && _config.GetUserConfig(User).UseUKMPG;
+            bool useUKMPG = !careHistory.VehicleData.IsElectric && _config.GetUserConfig(User).UseUKMPG;
             var gasViewModels = _gasHelper.GetGasRecordViewModels(vehicleRecords.GasRecords, useMPG, useUKMPG);
             //filter by tags
             if (reportParameter.Tags.Any())
@@ -557,8 +557,8 @@ namespace CarCareTracker.Controllers
                 //validate date range
                 if (endDate >= startDate) //allow for same day.
                 {
-                    vehicleHistory.StartDate = reportParameter.StartDate;
-                    vehicleHistory.EndDate = reportParameter.EndDate;
+                    careHistory.StartDate = reportParameter.StartDate;
+                    careHistory.EndDate = reportParameter.EndDate;
                     //remove all records with dates after the end date and dates before the start date.
                     vehicleRecords.OdometerRecords.RemoveAll(x => x.Date.Date > endDate || x.Date.Date < startDate);
                     vehicleRecords.ServiceRecords.RemoveAll(x => x.Date.Date > endDate || x.Date.Date < startDate);
@@ -570,12 +570,12 @@ namespace CarCareTracker.Controllers
                 }
             }
             var maxMileage = _vehicleLogic.GetMaxMileage(vehicleRecords);
-            vehicleHistory.Odometer = maxMileage.ToString("N0");
+            careHistory.Odometer = maxMileage.ToString("N0");
             var minMileage = _vehicleLogic.GetMinMileage(vehicleRecords);
             var distanceTraveled = maxMileage - minMileage;
-            if (!string.IsNullOrWhiteSpace(vehicleHistory.VehicleData.PurchaseDate))
+            if (!string.IsNullOrWhiteSpace(careHistory.VehicleData.PurchaseDate))
             {
-                var endDate = vehicleHistory.VehicleData.SoldDate;
+                var endDate = careHistory.VehicleData.SoldDate;
                 int daysOwned = 0;
                 if (string.IsNullOrWhiteSpace(endDate))
                 {
@@ -583,47 +583,47 @@ namespace CarCareTracker.Controllers
                 }
                 try
                 {
-                    daysOwned = (DateTime.Parse(endDate) - DateTime.Parse(vehicleHistory.VehicleData.PurchaseDate)).Days;
-                    vehicleHistory.DaysOwned = daysOwned.ToString("N0");
+                    daysOwned = (DateTime.Parse(endDate) - DateTime.Parse(careHistory.VehicleData.PurchaseDate)).Days;
+                    careHistory.DaysOwned = daysOwned.ToString("N0");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    vehicleHistory.DaysOwned = string.Empty;
+                    careHistory.DaysOwned = string.Empty;
                 }
                 //calculate depreciation
-                var totalDepreciation = vehicleHistory.VehicleData.PurchasePrice - vehicleHistory.VehicleData.SoldPrice;
+                var totalDepreciation = careHistory.VehicleData.PurchasePrice - careHistory.VehicleData.SoldPrice;
                 //we only calculate depreciation if a sold price is provided.
-                if (totalDepreciation != default && vehicleHistory.VehicleData.SoldPrice != default)
+                if (totalDepreciation != default && careHistory.VehicleData.SoldPrice != default)
                 {
-                    vehicleHistory.TotalDepreciation = totalDepreciation;
+                    careHistory.TotalDepreciation = totalDepreciation;
                     if (daysOwned != default)
                     {
-                        vehicleHistory.DepreciationPerDay = Math.Abs(totalDepreciation / daysOwned);
+                        careHistory.DepreciationPerDay = Math.Abs(totalDepreciation / daysOwned);
                     }
                     if (distanceTraveled != default)
                     {
-                        vehicleHistory.DepreciationPerMile = Math.Abs(totalDepreciation / distanceTraveled);
+                        careHistory.DepreciationPerMile = Math.Abs(totalDepreciation / distanceTraveled);
                     }
                 }
             }
             List<GenericReportModel> reportData = new List<GenericReportModel>();
             string preferredFuelMileageUnit = _config.GetUserConfig(User).PreferredGasMileageUnit;
-            vehicleHistory.DistanceUnit = vehicleHistory.VehicleData.UseHours ? "h" : useMPG ? "mi." : "km";
-            vehicleHistory.TotalGasCost = gasViewModels.Sum(x => x.Cost);
-            vehicleHistory.TotalCost = vehicleRecords.ServiceRecords.Sum(x => x.Cost) + vehicleRecords.CollisionRecords.Sum(x => x.Cost) + vehicleRecords.UpgradeRecords.Sum(x => x.Cost) + vehicleRecords.TaxRecords.Sum(x => x.Cost);
+            careHistory.DistanceUnit = careHistory.VehicleData.UseHours ? "h" : useMPG ? "mi." : "km";
+            careHistory.TotalGasCost = gasViewModels.Sum(x => x.Cost);
+            careHistory.TotalCost = vehicleRecords.ServiceRecords.Sum(x => x.Cost) + vehicleRecords.CollisionRecords.Sum(x => x.Cost) + vehicleRecords.UpgradeRecords.Sum(x => x.Cost) + vehicleRecords.TaxRecords.Sum(x => x.Cost);
             if (distanceTraveled != default)
             {
-                vehicleHistory.DistanceTraveled = distanceTraveled.ToString("N0");
-                vehicleHistory.TotalCostPerMile = vehicleHistory.TotalCost / distanceTraveled;
-                vehicleHistory.TotalGasCostPerMile = vehicleHistory.TotalGasCost / distanceTraveled;
+                careHistory.DistanceTraveled = distanceTraveled.ToString("N0");
+                careHistory.TotalCostPerMile = careHistory.TotalCost / distanceTraveled;
+                careHistory.TotalGasCostPerMile = careHistory.TotalGasCost / distanceTraveled;
             }
             var averageMPG = "0";
             if (gasViewModels.Any())
             {
                 averageMPG = _gasHelper.GetAverageGasMileage(gasViewModels, useMPG);
             }
-            var fuelEconomyMileageUnit = StaticHelper.GetFuelEconomyUnit(vehicleHistory.VehicleData.IsElectric, vehicleHistory.VehicleData.UseHours, useMPG, useUKMPG);
+            var fuelEconomyMileageUnit = StaticHelper.GetFuelEconomyUnit(careHistory.VehicleData.IsElectric, careHistory.VehicleData.UseHours, useMPG, useUKMPG);
             if (fuelEconomyMileageUnit == "l/100km" && preferredFuelMileageUnit == "km/l")
             {
                 //conversion needed.
@@ -635,7 +635,7 @@ namespace CarCareTracker.Controllers
                 averageMPG = newAverageMPG.ToString("F");
                 fuelEconomyMileageUnit = preferredFuelMileageUnit;
             }
-            vehicleHistory.MPG = $"{averageMPG} {fuelEconomyMileageUnit}";
+            careHistory.MPG = $"{averageMPG} {fuelEconomyMileageUnit}";
             //insert servicerecords
             reportData.AddRange(vehicleRecords.ServiceRecords.Select(x => new GenericReportModel
             {
@@ -706,8 +706,8 @@ namespace CarCareTracker.Controllers
                 Provider = x.Provider,
                 Category = System.Text.RegularExpressions.Regex.Replace(x.Category.ToString(), "(?<=[a-z])([A-Z])", " $1")
             }));
-            vehicleHistory.VehicleHistory = reportData.OrderBy(x => x.Date).ThenBy(x => x.Odometer).ToList();
-            return PartialView("Report/_VehicleHistory", vehicleHistory);
+            careHistory.CareHistory = reportData.OrderBy(x => x.Date).ThenBy(x => x.Odometer).ToList();
+            return PartialView("Report/_CareHistory", careHistory);
         }
 
         [TypeFilter(typeof(CollaboratorFilter))]

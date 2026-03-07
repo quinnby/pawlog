@@ -89,7 +89,7 @@ function getSavedReportParameters() {
         }
     }
 }
-function generateVehicleHistoryReport() {
+function generateCareHistoryReport() {
     var vehicleId = GetVehicleId().vehicleId;
     $.get(`/Vehicle/GetReportParameters`, function (data) {
         if (data) {
@@ -369,7 +369,7 @@ function showDataTable(elemClicked) {
 function hideDataTable() {
     $("#vehicleDataTableModal").modal('hide');
 }
-function loadVehicleImageMap() {
+function loadPetBodyMap() {
     var vehicleId = GetVehicleId().vehicleId;
     $.get(`/Vehicle/GetVehicleImageMap?vehicleId=${vehicleId}`, function (data) {
         $("#vehicleDataTableModalContent").html(data);

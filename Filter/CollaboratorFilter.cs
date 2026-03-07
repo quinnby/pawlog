@@ -28,7 +28,16 @@ namespace CarCareTracker.Filter
                 List<int> vehicleIds = new List<int>();
                 if (!_multiple && filterContext.ActionArguments.ContainsKey("vehicleId"))
                 {
-                    vehicleIds.Add(int.Parse(filterContext.ActionArguments["vehicleId"].ToString()));
+                    var vehicleId = int.Parse(filterContext.ActionArguments["vehicleId"].ToString());
+                    if (vehicleId == default && filterContext.ActionArguments.ContainsKey("animalId") && filterContext.ActionArguments["animalId"] != null)
+                    {
+                        vehicleId = int.Parse(filterContext.ActionArguments["animalId"].ToString());
+                    }
+                    vehicleIds.Add(vehicleId);
+                }
+                else if (!_multiple && !filterContext.ActionArguments.ContainsKey("vehicleId") && filterContext.ActionArguments.ContainsKey("animalId") && filterContext.ActionArguments["animalId"] != null)
+                {
+                    vehicleIds.Add(int.Parse(filterContext.ActionArguments["animalId"].ToString()));
                 }
                 else if (_multiple && filterContext.ActionArguments.ContainsKey("vehicleIds"))
                 {

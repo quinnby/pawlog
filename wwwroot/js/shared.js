@@ -81,7 +81,7 @@ function warnToast(message) {
 }
 function viewVehicle(vehicleId) {
     // Prefer /animals route prefix for user-facing pet profile URLs
-    window.location.href = `/animals/Index?vehicleId=${vehicleId}`;
+    window.location.href = `/animals/Index?animalId=${vehicleId}`;
 }
 function saveVehicle(isEdit) {
     var vehicleId = getVehicleModelData().id;

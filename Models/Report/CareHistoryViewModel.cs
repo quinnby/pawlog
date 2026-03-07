@@ -1,9 +1,9 @@
 ﻿namespace CarCareTracker.Models
 {
-    public class VehicleHistoryViewModel
+    public class CareHistoryViewModel
     {
         public Vehicle VehicleData { get; set; }
-        public List<GenericReportModel> VehicleHistory { get; set; }
+        public List<GenericReportModel> CareHistory { get; set; }
         public ReportParameter ReportParameters { get; set; }
         public string Odometer { get; set; } = string.Empty;
         public string MPG { get; set; } = string.Empty;

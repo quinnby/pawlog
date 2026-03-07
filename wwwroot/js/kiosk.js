@@ -10,7 +10,7 @@ function showKioskVehicle(vehicleId) {
         $(`.kiosk-card-container .kiosk-card[data-vehicleId='${vehicleId}']`).addClass('kiosk-card-expanded');
         $('.kiosk-card-details').show();
         $(".kiosk-content").masonry();
-        setBrowserHistory('vehicleId', vehicleId)
+        setBrowserHistory('animalId', vehicleId)
     });
 }
 function showAllKioskVehicle(event) {
@@ -19,7 +19,7 @@ function showAllKioskVehicle(event) {
     $('.kiosk-card').removeClass('kiosk-card-expanded');
     $('.kiosk-card-details').hide();
     $(".kiosk-content").masonry();
-    setBrowserHistory('vehicleId', '');
+    setBrowserHistory('animalId', '');
 }
 function redirectToPlanner() {
     setBrowserHistory('kioskMode', 'plan');
@@ -44,10 +44,10 @@ function filterKioskPlan(sender) {
     if (selectedVal != 0) {
         $('[data-vehicleId]').hide();
         $(`[data-vehicleId='${selectedVal}']`).show();
-        setBrowserHistory('vehicleId', selectedVal);
+        setBrowserHistory('animalId', selectedVal);
     } else {
         $('[data-vehicleId]').show();
-        setBrowserHistory('vehicleId', '');
+        setBrowserHistory('animalId', '');
     }
 }
 function showKioskPlan(sender) {
@@ -82,10 +82,10 @@ function filterKioskReminder(sender) {
     if (selectedVal != 0) {
         $('[data-vehicleId]').hide();
         $(`[data-vehicleId='${selectedVal}']`).show();
-        setBrowserHistory('vehicleId', selectedVal);
+        setBrowserHistory('animalId', selectedVal);
     } else {
         $('[data-vehicleId]').show();
-        setBrowserHistory('vehicleId', '');
+        setBrowserHistory('animalId', '');
     }
     $('.kiosk-content').masonry();
 }
@@ -118,7 +118,7 @@ function showKioskReminder(sender) {
 }
 function kioskSelectLoadVehicleIdFromParam(elem) {
     let currentParams = new URLSearchParams(window.location.search);
-    let vehicleIdToLoad = currentParams.get('vehicleId');
+    let vehicleIdToLoad = currentParams.get('animalId') ?? currentParams.get('vehicleId');
     let recordIdToLoad = currentParams.get('recordId');
     if (vehicleIdToLoad != null && elem.find(`option[value='${vehicleIdToLoad}']`).length > 0) {
         elem.val(vehicleIdToLoad);
@@ -133,7 +133,7 @@ function kioskSelectLoadVehicleIdFromParam(elem) {
 
 function kioskLoadVehicleIdFromParam() {
     let currentParams = new URLSearchParams(window.location.search);
-    let vehicleIdToLoad = currentParams.get('vehicleId');
+    let vehicleIdToLoad = currentParams.get('animalId') ?? currentParams.get('vehicleId');
     if (vehicleIdToLoad != null) {
         showKioskVehicle(vehicleIdToLoad);
     }
