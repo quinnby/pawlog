@@ -354,10 +354,16 @@ function initExtraFieldDatePicker(fieldName) {
         });
     }
 }
-function initDatePicker(input, futureOnly) {
+function initDatePicker(input, futureOnly, unrestricted) {
     if (futureOnly) {
         input.datepicker({
             startDate: "+0d",
+            format: getShortDatePattern().pattern,
+            autoclose: true,
+            weekStart: getGlobalConfig().firstDayOfWeek
+        });
+    } else if (unrestricted) {
+        input.datepicker({
             format: getShortDatePattern().pattern,
             autoclose: true,
             weekStart: getGlobalConfig().firstDayOfWeek

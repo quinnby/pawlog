@@ -91,7 +91,7 @@ function getSavedReportParameters() {
 }
 function generateCareHistoryReport() {
     var vehicleId = GetVehicleId().vehicleId;
-    $.get(`/Vehicle/GetReportParameters`, function (data) {
+    $.get(`/Vehicle/GetReportParameters?vehicleId=${vehicleId}`, function (data) {
         if (data) {
             //prompt user to select columns
             Swal.fire({

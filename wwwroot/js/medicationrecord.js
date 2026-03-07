@@ -3,8 +3,8 @@ function showAddMedicationRecordModal() {
         if (data) {
             $("#medicationRecordModalContent").html(data);
             initDatePicker($('#medicationStartDate'));
-            initDatePicker($('#medicationEndDate'));
-            initDatePicker($('#medicationRefillDate'));
+            initDatePicker($('#medicationEndDate'), false, true);
+            initDatePicker($('#medicationRefillDate'), false, true);
             initTagSelector($("#medicationTag"));
             $('#medicationRecordModal').modal('show');
         }
@@ -16,8 +16,8 @@ function showEditMedicationRecordModal(medicationRecordId, nocache) {
         if (data) {
             $("#medicationRecordModalContent").html(data);
             initDatePicker($('#medicationStartDate'));
-            initDatePicker($('#medicationEndDate'));
-            initDatePicker($('#medicationRefillDate'));
+            initDatePicker($('#medicationEndDate'), false, true);
+            initDatePicker($('#medicationRefillDate'), false, true);
             initTagSelector($("#medicationTag"));
             $('#medicationRecordModal').modal('show');
             bindModalInputChanges('medicationRecordModal');

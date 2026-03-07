@@ -7,11 +7,12 @@
     var hideZero = userConfig.HideZero;
     var userLanguage = userConfig.UserLanguage;
     var extraFields = Model.ReportParameters.ExtraFields;
+    var showOdometerColumn = string.IsNullOrWhiteSpace(Model.VehicleData.PetName) && Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Odometer));
 }
 <div style="page-break-after: always;">
     <div class="row mt-2">
         <div class="d-flex">
-            <img src="@config.GetLogoUrl()" class="lubelogger-logo" />
+            <img src="@config.GetLogoUrl()" class="pawlogger-logo" />
             <div class="ms-5">
                 <span class="display-6">
                     @translator.Translate(userLanguage, "Pet Care History")
@@ -33,7 +34,8 @@
                 <li class="list-group-item">
                     <span class="display-6">@(!string.IsNullOrWhiteSpace(Model.VehicleData.PetName) ? Model.VehicleData.PetName : $"{Model.VehicleData.Year} {Model.VehicleData.Make} {Model.VehicleData.Model}")</span>
                 </li>
-                @if (!string.IsNullOrWhiteSpace(Model.VehicleData.LicensePlate))
+                @* License plate suppressed for pet profiles *@
+                @if (!string.IsNullOrWhiteSpace(Model.VehicleData.LicensePlate) && string.IsNullOrWhiteSpace(Model.VehicleData.PetName))
                 {
                     <li class="list-group-item">
                         <span class="lead">@Model.VehicleData.LicensePlate</span>
@@ -71,7 +73,7 @@
                         @if (!string.IsNullOrWhiteSpace(Model.DaysOwned))
                         {
                             <div class="col-4">
-                                <span><i class="bi bi-calendar-range me-2"></i>@($"{Model.DaysOwned} {translator.Translate(userLanguage, "Days")}")</span>
+                                <span><i class="bi bi-calendar-range me-2"></i>@($"{Model.DaysOwned} {translator.Translate(userLanguage, string.IsNullOrWhiteSpace(Model.VehicleData.PetName) ? "Days" : "Days in Care")}")</span>
                             </div>
                         }
                         @* Post-Phase-8 cleanup: Distance traveled is vehicle-only; suppress when zero or empty. *@
@@ -102,7 +104,8 @@
                     @* Show plain total cost; cost-per-distance omitted as it is vehicle-only *@
                     <li class="list-group-item">@($"{translator.Translate(userLanguage, "Total Care Cost")}: {Model.TotalCost.ToString("C")}") </li>
                 }
-                @if (Model.TotalGasCost > 0)
+                @* Fuel cost suppressed for pet profiles *@
+                @if (Model.TotalGasCost > 0 && string.IsNullOrWhiteSpace(Model.VehicleData.PetName))
                 {
                     <li class="list-group-item">@($"{translator.Translate(userLanguage, "Total Spent on Fuel")}: {Model.TotalGasCost.ToString("C")} ({Model.TotalGasCostPerMile.ToString("C")}/{Model.DistanceUnit})") </li>
                 }
@@ -110,7 +113,8 @@
         </div>
     </div>
     <hr />
-    @if (Model.TotalDepreciation != default)
+    @* Depreciation suppressed for pet profiles *@
+    @if (Model.TotalDepreciation != default && string.IsNullOrWhiteSpace(Model.VehicleData.PetName))
     {
         <div class="row">
             <div class="col-3">
@@ -141,7 +145,7 @@
                     <tr class="d-flex">
                         <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.DataType)) ? "" : "d-none")">@translator.Translate(userLanguage, "Type")</th>
                         <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Date)) ? "" : "d-none")">@translator.Translate(userLanguage, "Date")</th>
-                        <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Odometer)) ? "" : "d-none")">@translator.Translate(userLanguage, "Odometer")</th>
+                        <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(showOdometerColumn ? "" : "d-none")">@translator.Translate(userLanguage, "Odometer")</th>
                         <th scope="col" class="col-3 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Description)) ? "" : "d-none")">@translator.Translate(userLanguage, "Description")</th>
                         <th scope="col" class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Cost)) ? "" : "d-none")">@translator.Translate(userLanguage, "Cost")</th>
                         <th scope="col" class="col-4 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Notes)) ? "" : "d-none")">@translator.Translate(userLanguage, "Notes")</th>
@@ -184,7 +188,7 @@
                                 }
                             </td>
                             <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Date)) ? "" : "d-none")">@reportData.Date.ToShortDateString()</td>
-                            <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Odometer)) ? "" : "d-none")">@(reportData.Odometer == default ? "---" : reportData.Odometer.ToString("N0"))</td>
+                            <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(showOdometerColumn ? "" : "d-none")">@(reportData.Odometer == default ? "---" : reportData.Odometer.ToString("N0"))</td>
                             <td class="col-3 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Description)) ? "" : "d-none")">@reportData.Description</td>
                             <td class="col-2 text-truncate flex-grow-1 flex-shrink-1 @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Cost)) ? "" : "d-none")">@(StaticHelper.HideZeroCost(reportData.Cost, hideZero))</td>
                             <td class="col-4 flex-grow-1 flex-shrink-1 text-wrap text-break @(Model.ReportParameters.VisibleColumns.Contains(nameof(GenericReportModel.Notes)) ? "" : "d-none")">@StaticHelper.TruncateStrings(reportData.Notes, 100)</td>
@@ -199,7 +203,7 @@
                 </tbody>
                 <tfoot>
                     <tr class="d-flex">
-                        <td class="col-12 showOnPrint lubelogger-report-banner">
+                        <td class="col-12 showOnPrint pawlogger-report-banner">
                             @StaticHelper.ReportNote
                         </td>
                     </tr>
@@ -213,7 +217,7 @@
     {
         <div class="d-flex flex-column recordSticker">
             <div class="d-flex">
-                <img src="@config.GetLogoUrl()" class="lubelogger-logo" />
+                <img src="@config.GetLogoUrl()" class="pawlogger-logo" />
             </div>
             <hr />
             <div class="row">

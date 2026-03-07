@@ -42,7 +42,7 @@ function showEditHealthRecordModal(healthRecordId, nocache) {
             initDatePicker($('#healthRecordDate'));
             // also init follow-up date picker if visible
             if ($("#healthRecordFollowUpRequired").is(":checked")) {
-                initDatePicker($('#healthRecordFollowUpDate'));
+                initDatePicker($('#healthRecordFollowUpDate'), false, true);
             }
             initTagSelector($("#healthRecordTag"));
             $('#healthRecordModal').modal('show');

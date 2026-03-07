@@ -9,6 +9,25 @@ namespace CarCareTracker.Controllers
 {
     public partial class VehicleController
     {
+        private void ApplyUserPreferredLocaleForReportRendering()
+        {
+            var userConfig = _config.GetUserConfig(User);
+            if (string.IsNullOrWhiteSpace(userConfig.PreferredLocale))
+            {
+                return;
+            }
+
+            try
+            {
+                var userCulture = new CultureInfo(userConfig.PreferredLocale.Replace('_', '-'));
+                CultureInfo.CurrentCulture = userCulture;
+                CultureInfo.CurrentUICulture = userCulture;
+            }
+            catch
+            {
+            }
+        }
+
         [TypeFilter(typeof(CollaboratorFilter))]
         [HttpGet]
         public IActionResult GetReportPartialView(int vehicleId)
@@ -490,8 +509,15 @@ namespace CarCareTracker.Controllers
                 return Json(OperationResponse.Failed("No Attachments Found"));
             }
         }
-        public IActionResult GetReportParameters()
+        public IActionResult GetReportParameters(int vehicleId = 0)
         {
+            bool isPetProfile = false;
+            if (vehicleId > 0)
+            {
+                var vehicle = _dataAccess.GetVehicleById(vehicleId);
+                isPetProfile = vehicle != null && !string.IsNullOrWhiteSpace(vehicle.PetName);
+            }
+
             var viewModel = new ReportParameter() { 
                 VisibleColumns = new List<string> {
                     nameof(GenericReportModel.DataType),
@@ -504,6 +530,12 @@ namespace CarCareTracker.Controllers
                     nameof(GenericReportModel.WeightValue)
                 }
             };
+
+            if (isPetProfile)
+            {
+                viewModel.VisibleColumns.Remove(nameof(GenericReportModel.Odometer));
+            }
+
             //get all extra fields from service records, repairs, upgrades, and tax records.
             var recordTypes = new List<int>() { 0, 1, 3, 4 };
             var extraFields = new List<string>();
@@ -518,9 +550,16 @@ namespace CarCareTracker.Controllers
         [TypeFilter(typeof(CollaboratorFilter))]
         public IActionResult GetVehicleHistory(int vehicleId, ReportParameter reportParameter)
         {
+            ApplyUserPreferredLocaleForReportRendering();
+
             var careHistory = new CareHistoryViewModel();
             careHistory.ReportParameters = reportParameter;
             careHistory.VehicleData = _dataAccess.GetVehicleById(vehicleId);
+            bool isPetProfile = !string.IsNullOrWhiteSpace(careHistory.VehicleData.PetName);
+            if (isPetProfile)
+            {
+                careHistory.ReportParameters.VisibleColumns.Remove(nameof(GenericReportModel.Odometer));
+            }
             var vehicleRecords = _vehicleLogic.GetVehicleRecords(vehicleId);
             bool useMPG = _config.GetUserConfig(User).UseMPG;
             bool useUKMPG = !careHistory.VehicleData.IsElectric && _config.GetUserConfig(User).UseUKMPG;

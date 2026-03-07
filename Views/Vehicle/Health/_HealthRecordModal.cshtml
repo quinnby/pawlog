@@ -209,7 +209,7 @@
     function toggleHealthFollowUpDate(checkbox) {
         if (checkbox.checked) {
             $("#healthFollowUpDateRow").show();
-            initDatePicker($('#healthRecordFollowUpDate'));
+            initDatePicker($('#healthRecordFollowUpDate'), false, true);
         } else {
             $("#healthFollowUpDateRow").hide();
         }
@@ -217,7 +217,7 @@
     function toggleHealthReminderDueDate(checkbox) {
         if (checkbox.checked) {
             $("#healthReminderDueDateRow").show();
-            initDatePicker($('#healthReminderDueDate'));
+            initDatePicker($('#healthReminderDueDate'), false, true);
         } else {
             $("#healthReminderDueDateRow").hide();
         }
@@ -230,7 +230,7 @@
         $("#healthPreventiveCareFields").toggle(cat === 11);
         // initialize reminder due date picker if just shown and already checked
         if (cat === 11 && $("#healthReminderEnabled").is(":checked")) {
-            initDatePicker($('#healthReminderDueDate'));
+            initDatePicker($('#healthReminderDueDate'), false, true);
         }
         // Refresh the weight-category hint whenever category changes.
         updateWeightCategoryHint();

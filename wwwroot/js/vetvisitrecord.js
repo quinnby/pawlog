@@ -15,7 +15,7 @@ function showEditVetVisitRecordModal(vetVisitRecordId, nocache) {
             $("#vetVisitRecordModalContent").html(data);
             initDatePicker($('#vetVisitDate'));
             if ($("#vetVisitFollowUpNeeded").is(":checked")) {
-                initDatePicker($('#vetVisitFollowUpDate'));
+                initDatePicker($('#vetVisitFollowUpDate'), false, true);
             }
             initTagSelector($("#vetVisitTag"));
             $('#vetVisitRecordModal').modal('show');

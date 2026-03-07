@@ -3,7 +3,7 @@ function showAddLicensingRecordModal() {
         if (data) {
             $("#licensingRecordModalContent").html(data);
             initDatePicker($('#licensingIssueDate'));
-            initDatePicker($('#licensingExpiryDate'));
+            initDatePicker($('#licensingExpiryDate'), false, true);
             initTagSelector($("#licensingTag"));
             $('#licensingRecordModal').modal('show');
         }
@@ -15,7 +15,7 @@ function showEditLicensingRecordModal(licensingRecordId, nocache) {
         if (data) {
             $("#licensingRecordModalContent").html(data);
             initDatePicker($('#licensingIssueDate'));
-            initDatePicker($('#licensingExpiryDate'));
+            initDatePicker($('#licensingExpiryDate'), false, true);
             initTagSelector($("#licensingTag"));
             $('#licensingRecordModal').modal('show');
             bindModalInputChanges('licensingRecordModal');

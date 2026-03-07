@@ -3,7 +3,7 @@ function showAddVaccinationRecordModal() {
         if (data) {
             $("#vaccinationRecordModalContent").html(data);
             initDatePicker($('#vaccinationDate'));
-            initDatePicker($('#vaccinationNextDueDate'));
+            initDatePicker($('#vaccinationNextDueDate'), false, true);
             initTagSelector($("#vaccinationTag"));
             $('#vaccinationRecordModal').modal('show');
         }
@@ -15,7 +15,7 @@ function showEditVaccinationRecordModal(vaccinationRecordId, nocache) {
         if (data) {
             $("#vaccinationRecordModalContent").html(data);
             initDatePicker($('#vaccinationDate'));
-            initDatePicker($('#vaccinationNextDueDate'));
+            initDatePicker($('#vaccinationNextDueDate'), false, true);
             initTagSelector($("#vaccinationTag"));
             $('#vaccinationRecordModal').modal('show');
             bindModalInputChanges('vaccinationRecordModal');

@@ -436,6 +436,8 @@ namespace CarCareTracker.Helper
                 EnableAutoFillOdometer = CheckBool(CheckString(nameof(UserConfig.EnableAutoFillOdometer))),
                 PreferredGasMileageUnit = CheckString(nameof(UserConfig.PreferredGasMileageUnit)),
                 PreferredGasUnit = CheckString(nameof(UserConfig.PreferredGasUnit)),
+                PreferredWeightUnit = CheckString(nameof(UserConfig.PreferredWeightUnit), "lbs"),
+                PreferredLocale = CheckString(nameof(UserConfig.PreferredLocale)),
                 UseUnitForFuelCost = CheckBool(CheckString(nameof(UserConfig.UseUnitForFuelCost))),
                 UserLanguage = CheckString(nameof(UserConfig.UserLanguage), "en_US"),
                 HideSoldVehicles = CheckBool(CheckString(nameof(UserConfig.HideSoldVehicles))),
